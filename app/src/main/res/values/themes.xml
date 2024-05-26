@@ -6,4 +6,10 @@
     </style>
 
     <style name="Theme.FitnessBodyBuilding" parent="Base.Theme.FitnessBodyBuilding" />
+
+    <style name="Theme.app.SplashScreen" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/white</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/logo</item>
+        <item name="postSplashScreenTheme">@style/Base.Theme.FitnessBodyBuilding</item>
+    </style>
 </resources>
