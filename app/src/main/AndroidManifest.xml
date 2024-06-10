@@ -16,7 +16,7 @@
         android:theme="@style/Theme.FitnessBodyBuilding"
         tools:targetApi="31">
         <activity
-            android:name=".Registrazione"
+            android:name=".Registrazionee"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
