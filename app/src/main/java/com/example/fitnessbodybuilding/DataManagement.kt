@@ -1,20 +1,58 @@
-package com.example.fitnessbodybuilding
-
+import com.example.fitnessbodybuilding.User
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 class DataManagement(
-    val utenti: MutableList<User> = mutableListOf(),
-    val db: DatabaseReference = FirebaseDatabase.getInstance().reference
+    val db: DatabaseReference = FirebaseDatabase.getInstance().reference,
+    var utenti: MutableList<User> = mutableListOf()
 ) {
+    private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
+
+    init {
+        loadUsersFromDb()
+    }
+
+    private fun loadUsersFromDb() {
+        db.child("users").addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val usersList = mutableListOf<User>()
+                for (userSnapshot in dataSnapshot.children) {
+                    val user = userSnapshot.getValue(User::class.java)
+                    if (user != null) {
+                        usersList.add(user)
+                    }
+                }
+                utenti = usersList
+                println("Users loaded: $utenti")
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                println("Error reading users: ${databaseError.message}")
+            }
+        })
+    }
+
     fun insertUser(user: User) {
         db.child("users").child(user.id.toString()).setValue(user)
             .addOnSuccessListener {
                 println("User added with ID: ${user.id}")
+                utenti.add(user) // Aggiungi l'utente alla lista solo in caso di successo
             }
             .addOnFailureListener { e ->
                 println("Error adding user: $e")
             }
-        utenti.add(user)
+    }
+
+    fun loginUser(email: String, password: String, callback: (Boolean, String?) -> Unit) {
+        val foundUser = utenti.find { it.email == email && it.password == password }
+        if (foundUser != null) {
+            callback(true, null)
+        } else {
+            callback(false, "Utente non trovato o password errata")
+        }
     }
 }

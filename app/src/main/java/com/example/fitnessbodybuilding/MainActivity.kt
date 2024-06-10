@@ -1,13 +1,12 @@
-package com.example.fitnessbodybuilding
-
 import android.os.Bundle
-import android.widget.Button
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.Fragment
+import com.example.fitnessbodybuilding.*
 import com.example.fitnessbodybuilding.databinding.ActivityMainBinding
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), Registrazione.OnRegistrationCompleteListener {
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -17,10 +16,15 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        replaceFragment(Home())
 
-        binding.bottomNavigationView3.setOnItemSelectedListener {
-            when (it.itemId) {
+        // Controlla solo se savedInstanceState è null per mostrare Introduction
+        if (savedInstanceState == null) {
+            replaceFragment(Introduction())
+        }
+
+        // Imposta il listener per il BottomNavigationView
+        binding.bottomNavigationView3.setOnItemSelectedListener { item ->
+            when (item.itemId) {
                 R.id.home -> replaceFragment(Home())
                 R.id.workout -> replaceFragment(Workout())
                 R.id.diary -> replaceFragment(Diary())
@@ -30,21 +34,31 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
-        // Assicurati che il bottone venga trovato correttamente
-        val registrationButton = findViewById<Button>(R.id.a)
-        if (registrationButton != null) {
-            registrationButton.setOnClickListener {
-                replaceFragment(Registrazionee())
-            }
-        } else {
-            println("Button with ID 'a' not found")
-        }
+        // Nasconde il BottomNavigationView durante l'Introduction, la Registrazione e il Login
+        hideBottomNavigationViewIfNeeded()
     }
 
+    // Metodo per sostituire i fragment
     private fun replaceFragment(fragment: Fragment) {
         val fragmentManager = supportFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.frame_layout, fragment)
         fragmentTransaction.commit()
+    }
+
+    // Nasconde il BottomNavigationView durante l'Introduction, la Registrazione e il Login
+    private fun hideBottomNavigationViewIfNeeded() {
+        val currentFragment = supportFragmentManager.findFragmentById(R.id.frame_layout)
+        if (currentFragment is Introduction || currentFragment is Registrazione || currentFragment is Login) {
+            binding.bottomNavigationView3.visibility = View.GONE
+        } else {
+            binding.bottomNavigationView3.visibility = View.VISIBLE
+        }
+    }
+
+    // Metodo chiamato quando la registrazione è completata con successo
+    override fun onRegistrationComplete() {
+        replaceFragment(Home())
+        binding.bottomNavigationView3.visibility = View.VISIBLE
     }
 }

@@ -1,5 +1,7 @@
 package com.example.fitnessbodybuilding
 
+import DataManagement
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -7,7 +9,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
+import androidx.navigation.fragment.findNavController
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -30,33 +34,43 @@ class Registrazione : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
-        dataManagement = DataManagement()
 
-        findViewById<Button>(R.id.btnConferma).setOnClickListener {
+    }
+    interface OnRegistrationCompleteListener {
+        fun onRegistrationComplete()
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        dataManagement = DataManagement()
+        view.findViewById<Button>(R.id.btnConferma).setOnClickListener {
             try {
                 if (checkTexts()) {
                     val user = User(
                         id = dataManagement.utenti.size + 1,
-                        username = findViewById<EditText>(R.id.txtUser).text.toString(),
-                        password = findViewById<EditText>(R.id.txtPass).text.toString(),
-                        email = findViewById<EditText>(R.id.txtEmail).text.toString()
+                        username = view.findViewById<EditText>(R.id.txtUser).text.toString(),
+                        password = view.findViewById<EditText>(R.id.txtPass).text.toString(),
+                        email = view.findViewById<EditText>(R.id.txtEmail).text.toString(),
+                        peso =0
                     )
                     dataManagement.insertUser(user)
-                    Toast.makeText(this, "Registrazione avvenuta", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Registrazione avvenuta", Toast.LENGTH_SHORT).show()
+                    findNavController().navigate(R.id.action_registrationFragment_to_homeFragment)
                 } else {
-                    Toast.makeText(this, "Campi mancanti o errati", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Campi mancanti o errati", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: IllegalArgumentException) {
-                Toast.makeText(this, "Invalid email format", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Invalid email format", Toast.LENGTH_SHORT).show()
                 println("Insertion failed: ${e.message}")
             }
         }
     }
-
     fun checkTexts(): Boolean {
-        return !findViewById<EditText>(R.id.txtEmail).text.toString()
-            .isBlank() && !findViewById<EditText>(R.id.txtUser).text.toString()
-            .isBlank() && !findViewById<EditText>(R.id.txtPass).text.toString().isBlank()
+        val email = view?.findViewById<EditText>(R.id.txtEmail)?.text.toString()
+        val username = view?.findViewById<EditText>(R.id.txtUser)?.text.toString()
+        val password = view?.findViewById<EditText>(R.id.txtPass)?.text.toString()
+
+        return email.isNotBlank() && username.isNotBlank() && password.isNotBlank()
     }
 
     override fun onCreateView(
