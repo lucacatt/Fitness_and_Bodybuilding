@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "105748671509",
+    "firebase_url": "https://fitness-and-bodybuilding-e4247-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "fitness-and-bodybuilding-e4247",
+    "storage_bucket": "fitness-and-bodybuilding-e4247.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:105748671509:android:b6f27844369889c977321c",
+        "android_client_info": {
+          "package_name": "com.example.fitnessbodybuilding"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3DeCnCMfDpDQH3O1hMoEBD0SDMYSv6Bk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
