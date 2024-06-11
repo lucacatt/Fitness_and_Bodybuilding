@@ -25,10 +25,7 @@ class MainActivity : AppCompatActivity(), Registrazione.OnRegistrationCompleteLi
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
 
-        val fragment = supportFragmentManager.findFragmentById(R.id.homeFragment)
-        if (fragment != null) {
-            clearFragmentContent(fragment)
-        }
+
         binding.bottomNavigationView3.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.home -> replaceFragment(Home())
@@ -40,7 +37,6 @@ class MainActivity : AppCompatActivity(), Registrazione.OnRegistrationCompleteLi
         }
 
         val navController = navHostFragment.navController
-            // Hide BottomNavigationView for certain fragments
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
                 R.id.introductionFragment, R.id.loginFragment, R.id.registrationFragment -> {
@@ -60,6 +56,7 @@ class MainActivity : AppCompatActivity(), Registrazione.OnRegistrationCompleteLi
         }
     }
     fun replaceFragment(fragment: Fragment) {
+        clearFragmentContent(supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment)
         val fragmentManager = supportFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.frame_layout, fragment)
