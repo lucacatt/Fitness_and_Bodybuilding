@@ -6,11 +6,12 @@
     tools:context=".Workout">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
+
+    <Button
+        android:id="@+id/btnC"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Workout"
-        android:textSize="26dp"
+        android:text="Crea scheda"
         android:layout_gravity="center"/>
 
 </FrameLayout>

@@ -5,6 +5,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import androidx.navigation.fragment.findNavController
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -34,7 +36,22 @@ class Workout : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_workout, container, false)
+        val view = inflater.inflate(R.layout.fragment_workout, container, false)
+
+        val button: Button = view.findViewById(R.id.btnC)
+        button.setOnClickListener {
+            clearFragmentContent(this)
+            findNavController().navigate(R.id.creazione_schedaFragment)
+        }
+
+        return view
+    }
+
+    private fun clearFragmentContent(fragment: Fragment) {
+        val view = fragment.view
+        if (view is ViewGroup) {
+            view.removeAllViews()
+        }
     }
 
     companion object {
