@@ -1,9 +1,13 @@
+package com.example.fitnessbodybuilding
+
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.Fragment
-import com.example.fitnessbodybuilding.*
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
 import com.example.fitnessbodybuilding.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity(), Registrazione.OnRegistrationCompleteListener {
@@ -17,48 +21,55 @@ class MainActivity : AppCompatActivity(), Registrazione.OnRegistrationCompleteLi
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Controlla solo se savedInstanceState è null per mostrare Introduction
-        if (savedInstanceState == null) {
-            replaceFragment(Introduction())
-        }
+        // Setup NavController with BottomNavigationView
+        val navHostFragment = supportFragmentManager
+            .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
 
-        // Imposta il listener per il BottomNavigationView
+        val fragment = supportFragmentManager.findFragmentById(R.id.homeFragment)
+        if (fragment != null) {
+            clearFragmentContent(fragment)
+        }
         binding.bottomNavigationView3.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.home -> replaceFragment(Home())
                 R.id.workout -> replaceFragment(Workout())
                 R.id.diary -> replaceFragment(Diary())
                 R.id.profile -> replaceFragment(Profile())
-                else -> { }
             }
             true
         }
 
-        // Nasconde il BottomNavigationView durante l'Introduction, la Registrazione e il Login
-        hideBottomNavigationViewIfNeeded()
-    }
+        val navController = navHostFragment.navController
+            // Hide BottomNavigationView for certain fragments
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            when (destination.id) {
+                R.id.introductionFragment, R.id.loginFragment, R.id.registrationFragment -> {
+                    binding.bottomNavigationView3.visibility = View.GONE
+                }
 
-    // Metodo per sostituire i fragment
-    private fun replaceFragment(fragment: Fragment) {
+                else -> {
+                    binding.bottomNavigationView3.visibility = View.VISIBLE
+                }
+            }
+        }
+    }
+    private fun clearFragmentContent(fragment: Fragment) {
+        val view = fragment.view
+        if (view is ViewGroup) {
+            view.removeAllViews()
+        }
+    }
+    fun replaceFragment(fragment: Fragment) {
         val fragmentManager = supportFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.frame_layout, fragment)
         fragmentTransaction.commit()
     }
-
-    // Nasconde il BottomNavigationView durante l'Introduction, la Registrazione e il Login
-    private fun hideBottomNavigationViewIfNeeded() {
-        val currentFragment = supportFragmentManager.findFragmentById(R.id.frame_layout)
-        if (currentFragment is Introduction || currentFragment is Registrazione || currentFragment is Login) {
-            binding.bottomNavigationView3.visibility = View.GONE
-        } else {
-            binding.bottomNavigationView3.visibility = View.VISIBLE
-        }
-    }
-
-    // Metodo chiamato quando la registrazione è completata con successo
     override fun onRegistrationComplete() {
-        replaceFragment(Home())
+        val navHostFragment = supportFragmentManager
+            .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val navController = navHostFragment.navController
+        navController.navigate(R.id.homeFragment)
         binding.bottomNavigationView3.visibility = View.VISIBLE
     }
 }
