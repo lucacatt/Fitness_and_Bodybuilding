@@ -42,7 +42,7 @@ class DataManagement private constructor(
         db.child("users").child(user.id.toString()).setValue(user)
             .addOnSuccessListener {
                 println("User added with ID: ${user.id}")
-                utenti.add(user) // Aggiungi l'utente alla lista solo in caso di successo
+                utenti.add(user)
             }
             .addOnFailureListener { e ->
                 println("Error adding user: $e")
@@ -61,7 +61,8 @@ class DataManagement private constructor(
     }
 
     companion object {
-        @Volatile private var instance: DataManagement? = null
+        @Volatile
+        private var instance: DataManagement? = null
 
         fun getInstance(): DataManagement =
             instance ?: synchronized(this) {
