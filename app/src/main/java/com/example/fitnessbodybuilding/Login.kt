@@ -1,6 +1,5 @@
 package com.example.fitnessbodybuilding
 
-import DataManagement
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -25,7 +24,6 @@ class Login : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-    private lateinit var dataManagement: DataManagement
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,14 +42,14 @@ class Login : Fragment() {
         val btnLogin: Button = view.findViewById(R.id.btnLogin)
         val etEmail: EditText = view.findViewById(R.id.etEmail)
         val etPassword: EditText = view.findViewById(R.id.etPassword)
-        dataManagement = DataManagement()
+
 
         btnLogin.setOnClickListener {
             val email = etEmail.text.toString()
             val password = etPassword.text.toString()
 
             if (email.isNotEmpty() && password.isNotEmpty()) {
-                dataManagement.loginUser(email, password) { isSuccess, errorMessage ->
+                DataManagement.getInstance().loginUser(email, password) { isSuccess, errorMessage ->
                     if (isSuccess) {
                         findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
                     } else {
