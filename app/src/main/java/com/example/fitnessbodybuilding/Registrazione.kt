@@ -1,7 +1,5 @@
 package com.example.fitnessbodybuilding
 
-import DataManagement
-import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -9,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
-import android.widget.TextView
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 
@@ -27,7 +24,6 @@ class Registrazione : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-    private lateinit var dataManagement: DataManagement
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -42,18 +38,17 @@ class Registrazione : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        dataManagement = DataManagement()
         view.findViewById<Button>(R.id.btnConferma).setOnClickListener {
             try {
                 if (checkTexts()) {
                     val user = User(
-                        id = dataManagement.utenti.size + 1,
+                        id = DataManagement.getInstance().utenti.size + 1,
                         username = view.findViewById<EditText>(R.id.txtUser).text.toString(),
                         password = view.findViewById<EditText>(R.id.txtPass).text.toString(),
                         email = view.findViewById<EditText>(R.id.txtEmail).text.toString(),
                         peso =0
                     )
-                    dataManagement.insertUser(user)
+                    DataManagement.getInstance().insertUser(user)
                     Toast.makeText(requireContext(), "Registrazione avvenuta", Toast.LENGTH_SHORT).show()
                     findNavController().navigate(R.id.action_registrationFragment_to_homeFragment)
                 } else {

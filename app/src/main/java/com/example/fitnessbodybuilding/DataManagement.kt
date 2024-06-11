@@ -1,4 +1,5 @@
-import com.example.fitnessbodybuilding.User
+package com.example.fitnessbodybuilding
+
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -6,9 +7,10 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-class DataManagement(
+class DataManagement private constructor(
     val db: DatabaseReference = FirebaseDatabase.getInstance().reference,
-    var utenti: MutableList<User> = mutableListOf()
+    var utenti: MutableList<User> = mutableListOf(),
+    var loggato: User? = null
 ) {
     private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
 
@@ -48,11 +50,29 @@ class DataManagement(
     }
 
     fun loginUser(email: String, password: String, callback: (Boolean, String?) -> Unit) {
+        loadUsersFromDb()
         val foundUser = utenti.find { it.email == email && it.password == password }
         if (foundUser != null) {
+            loggato = foundUser
             callback(true, null)
         } else {
             callback(false, "Utente non trovato o password errata")
         }
+    }
+
+    companion object {
+        @Volatile private var instance: DataManagement? = null
+
+        fun getInstance(): DataManagement =
+            instance ?: synchronized(this) {
+                instance ?: DataManagement().also {
+                    instance = it
+                    it.init()  // Inizializza l'istanza appena creata
+                }
+            }
+    }
+
+    private fun init() {
+        loadUsersFromDb()
     }
 }
