@@ -46,15 +46,15 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="90dp"
-                android:text="Button" />
+                android:text="Conferma" />
 
             <LinearLayout
                 android:id="@+id/tableContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
                 android:layout_marginTop="200dp"
-                android:layout_marginBottom="100dp"/>
+                android:layout_marginBottom="100dp"
+                android:orientation="vertical" />
 
         </FrameLayout>
     </ScrollView>

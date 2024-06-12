@@ -10,6 +10,7 @@ import com.google.firebase.database.ValueEventListener
 class DataManagement private constructor(
     val db: DatabaseReference = FirebaseDatabase.getInstance().reference,
     var utenti: MutableList<User> = mutableListOf(),
+    var esercizi: MutableList<Esercizio> = mutableListOf(),
     var loggato: User? = null
 ) {
     private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
@@ -75,5 +76,25 @@ class DataManagement private constructor(
 
     private fun init() {
         loadUsersFromDb()
+        loadExerciseFromDb()
+    }
+
+    private fun loadExerciseFromDb() {
+        db.child("Esercizio").addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val exList = mutableListOf<Esercizio>()
+                for (userSnapshot in dataSnapshot.children) {
+                    val esercizio = userSnapshot.getValue(Esercizio::class.java)
+                    if (esercizio != null) {
+                        exList.add(esercizio)
+                    }
+                }
+                esercizi = exList
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                println("Error reading exercises: ${databaseError.message}")
+            }
+        })
     }
 }

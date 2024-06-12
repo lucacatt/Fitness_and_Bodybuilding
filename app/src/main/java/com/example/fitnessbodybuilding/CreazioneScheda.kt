@@ -27,7 +27,7 @@ class CreazioneScheda : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-    private val scheda: Scheda = Scheda()
+    private val scheda = Scheda()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,8 +55,11 @@ class CreazioneScheda : Fragment() {
     private fun generateTables(container: ViewGroup, view: View) {
         container.removeAllViews()
         val giorni: EditText = view.findViewById(R.id.txtSplit)
-        if (giorni.text.toString() != "")
-            for (i in 1..giorni.text.toString().toInt()) {
+        if (giorni.text.toString() != "") {
+            for (i in 0..giorni.text.toString().toInt() - 1) {
+                scheda.Esercizi.add(Divisione())
+            }
+            for (i in 0..scheda.Esercizi.size - 1) {
                 // Crea una nuova TableLayout
                 val tableLayout = TableLayout(requireContext())
                 tableLayout.layoutParams = TableLayout.LayoutParams(
@@ -74,7 +77,7 @@ class CreazioneScheda : Fragment() {
                 headerRow.gravity = Gravity.CENTER
 
                 val headerTextView = TextView(requireContext())
-                headerTextView.text = "Giorno $i"
+                headerTextView.text = "Giorno " + (i + 1)
                 headerTextView.gravity = Gravity.CENTER
                 headerTextView.setPadding(8, 8, 8, 8)
                 headerTextView.textSize = 18f
@@ -84,7 +87,7 @@ class CreazioneScheda : Fragment() {
                 tableLayout.addView(headerRow)
 
                 // Aggiunge righe e dati alla tabella
-                for (j in scheda.Esercizi) {
+                for (j in 0..scheda.Esercizi.get(i).listaEsercizi.size - 1) {
                     val tableRow = TableRow(requireContext())
                     tableRow.layoutParams = TableRow.LayoutParams(
                         TableRow.LayoutParams.MATCH_PARENT,
@@ -106,7 +109,7 @@ class CreazioneScheda : Fragment() {
 
                 // Crea un nuovo bottone centrato
                 val button = Button(requireContext())
-                button.text = "Bottone $i"
+                button.text = "Aggiungi esercizio"
                 val buttonParams = TableLayout.LayoutParams(
                     TableLayout.LayoutParams.WRAP_CONTENT,
                     TableLayout.LayoutParams.WRAP_CONTENT
@@ -118,6 +121,21 @@ class CreazioneScheda : Fragment() {
                 // Aggiunge il bottone al container
                 container.addView(button)
             }
+        }
+
+        // Crea un nuovo bottone centrato
+        val button = Button(requireContext())
+        button.text = "Salva"
+        val buttonParams = TableLayout.LayoutParams(
+            TableLayout.LayoutParams.WRAP_CONTENT,
+            TableLayout.LayoutParams.WRAP_CONTENT
+        )
+        buttonParams.gravity = Gravity.CENTER
+        button.layoutParams = buttonParams
+        button.setPadding(16, 36, 16, 16)
+
+        // Aggiunge il bottone al container
+        container.addView(button)
     }
 
     companion object {
