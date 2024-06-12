@@ -13,24 +13,31 @@ class DataManagement private constructor(
     var esercizi: MutableList<Esercizio> = mutableListOf(),
     var loggato: User? = null
 ) {
-    private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
 
-    init {
-        loadUsersFromDb()
-    }
 
     private fun loadUsersFromDb() {
+        println("Starting to load users from database...")
+
         db.child("users").addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
+                println("DataSnapshot exists: ${dataSnapshot.exists()}")  // Verifica se il DataSnapshot esiste
+                if (!dataSnapshot.exists()) {
+                    println("No data found for 'users' node.")
+                    return
+                }
+
                 val usersList = mutableListOf<User>()
                 for (userSnapshot in dataSnapshot.children) {
                     val user = userSnapshot.getValue(User::class.java)
                     if (user != null) {
                         usersList.add(user)
+                        println("User added: $user")  // Log dell'utente aggiunto
+                    } else {
+                        println("User is null for snapshot: ${userSnapshot.key}")  // Log se l'utente è null
                     }
                 }
                 utenti = usersList
-                println("Users loaded: $utenti")
+                println("Users loaded successfully: $utenti")
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
@@ -39,10 +46,12 @@ class DataManagement private constructor(
         })
     }
 
+
     fun insertUser(user: User) {
         db.child("users").child(user.id.toString()).setValue(user)
             .addOnSuccessListener {
                 println("User added with ID: ${user.id}")
+                loggato=user
                 utenti.add(user)
             }
             .addOnFailureListener { e ->
@@ -51,7 +60,6 @@ class DataManagement private constructor(
     }
 
     fun loginUser(email: String, password: String, callback: (Boolean, String?) -> Unit) {
-        loadUsersFromDb()
         val foundUser = utenti.find { it.email == email && it.password == password }
         if (foundUser != null) {
             loggato = foundUser
@@ -96,5 +104,19 @@ class DataManagement private constructor(
                 println("Error reading exercises: ${databaseError.message}")
             }
         })
+    }
+    fun updateUser(user: User) {
+        db.child("users").child(user.id.toString()).setValue(user)
+            .addOnSuccessListener {
+                println("User updated with ID: ${user.id}")
+                val index = utenti.indexOfFirst { it.id == user.id }
+                if (index != -1) {
+                    utenti[index] = user
+                }
+                loggato = user // Update the logged in user
+            }
+            .addOnFailureListener { e ->
+                println("Error updating user: $e")
+            }
     }
 }

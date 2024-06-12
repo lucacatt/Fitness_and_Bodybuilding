@@ -24,6 +24,7 @@
 
         <EditText
             android:id="@+id/etEmail"
+            android:text="luca@gmail.com"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textEmailAddress"
@@ -40,6 +41,7 @@
 
         <EditText
             android:id="@+id/etPassword"
+            android:text="1234"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPassword"
