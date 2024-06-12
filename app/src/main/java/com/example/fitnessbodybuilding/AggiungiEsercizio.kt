@@ -1,40 +1,39 @@
 package com.example.fitnessbodybuilding
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.fitnessbodybuilding.databinding.FragmentAggiungiEsercizioBinding
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [AggiungiEsercizio.newInstance] factory method to
- * create an instance of this fragment.
- */
-class AggiungiEsercizio : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+class AggiungiEsercizio : Fragment(), OnEsercizioClickListener {
+    private val args: AggiungiEsercizioArgs by navArgs()
+    private lateinit var binding: FragmentAggiungiEsercizioBinding
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: EsercizioAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_creazione_scheda, container, false)
-        val es = DataManagement.getInstance().esercizi
+        binding = FragmentAggiungiEsercizioBinding.inflate(inflater, container, false)
+        val view = binding.root
+
+        val giorno = args.giorno // Retrieve the 'giorno' argument
+        val esercizi = DataManagement.getInstance().esercizi
+
+        // Set up RecyclerView
+        recyclerView = binding.viewEs // Assuming you have a RecyclerView in your layout
+        recyclerView.layoutManager = LinearLayoutManager(context)
+        adapter = EsercizioAdapter(esercizi, this)
+        recyclerView.adapter = adapter
 
         return view
     }
@@ -53,11 +52,24 @@ class AggiungiEsercizio : Fragment() {
         fun newInstance(param1: String, param2: String) =
             AggiungiEsercizio().apply {
                 arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+
                 }
             }
     }
+
+    override fun onEsercizioClick(esercizio: String) {
+        findNavController().navigate(
+            R.id.action_aggiungiEsercizio_to_creazioneScheda,
+            Bundle().apply {
+                putInt("giorno", args.giorno)
+                putString("esercizio", esercizio)
+            }
+        )
+    }
+}
+
+interface OnEsercizioClickListener {
+    fun onEsercizioClick(esercizio: String)
 }
 
 

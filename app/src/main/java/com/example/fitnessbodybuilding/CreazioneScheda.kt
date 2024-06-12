@@ -12,7 +12,9 @@ import android.widget.EditText
 import android.widget.TableLayout
 import android.widget.TableRow
 import android.widget.TextView
-import androidx.navigation.fragment.findNavController
+import androidx.navigation.Navigation
+import androidx.navigation.fragment.navArgs
+import com.example.fitnessbodybuilding.databinding.FragmentCreazioneSchedaBinding
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -26,17 +28,10 @@ private const val ARG_PARAM2 = "param2"
  */
 class CreazioneScheda : Fragment() {
     // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private val args: CreazioneSchedaArgs by navArgs()
+    private lateinit var binding: FragmentCreazioneSchedaBinding
     private val scheda = Scheda()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,6 +45,8 @@ class CreazioneScheda : Fragment() {
         button.setOnClickListener {
             generateTables(tableContainer, view)
         }
+        val giorno = args.giorno // Retrieve the 'giorno' argument
+        val esercizio = args.esercizio
         return view
     }
 
@@ -111,7 +108,6 @@ class CreazioneScheda : Fragment() {
                 // Crea un nuovo bottone centrato
                 val button = Button(requireContext())
                 button.text = "Aggiungi esercizio"
-                button.id = i
                 val buttonParams = TableLayout.LayoutParams(
                     TableLayout.LayoutParams.WRAP_CONTENT,
                     TableLayout.LayoutParams.WRAP_CONTENT
@@ -120,9 +116,12 @@ class CreazioneScheda : Fragment() {
                 button.layoutParams = buttonParams
                 button.setPadding(16, 16, 16, 16)
 
-                button.setOnClickListener {
-                    findNavController().navigate(CreazioneSchedaDirections.actionCreazioneSchedaToAggiungiEsercizioFragment())
-                }
+                button.setOnClickListener(Navigation.createNavigateOnClickListener(
+                    R.id.action_creazioneScheda_to_aggiungiEsercizioFragment,
+                    Bundle().apply {
+                        putInt("giorno", i) // Passa l'indice del giorno
+                    }
+                ))
 
                 // Aggiunge il bottone al container
                 container.addView(button)
