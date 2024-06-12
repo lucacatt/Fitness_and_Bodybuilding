@@ -71,10 +71,12 @@
         android:label="fragment_creazione_scheda">
         <argument
             android:name="giorno"
-            app:argType="integer" />
+            app:argType="integer"
+            android:defaultValue="1" />
         <argument
             android:name="esercizio"
-            app:argType="string" />
+            app:argType="string"
+            android:defaultValue="0" />
         <action
             android:id="@+id/action_creazioneScheda_to_aggiungiEsercizioFragment"
             app:destination="@id/aggiungiEsercizioFragment" />
