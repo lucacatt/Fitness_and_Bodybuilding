@@ -1,6 +1,5 @@
 package com.example.fitnessbodybuilding
 
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -87,9 +86,9 @@ class DataManagement private constructor(
         loadExerciseFromDb()
     }
 
-    private fun loadExerciseFromDb() {
+    fun loadExerciseFromDb() {
         db.child("Esercizio").addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
+            override fun onDataChange(dataSnapshot: DataSnapshot)  {
                 val exList = mutableListOf<Esercizio>()
                 for (userSnapshot in dataSnapshot.children) {
                     val esercizio = userSnapshot.getValue(Esercizio::class.java)

@@ -11,8 +11,8 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:7.0.2") // Verifica la versione più recente
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.21") // Verifica la versione più recente
+        classpath("com.android.tools.build:gradle:8.4.0") // Verifica la versione più recente
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.21") // Verifica la versione più recente
         classpath("androidx.navigation:navigation-safe-args-gradle-plugin:2.5.0") // Aggiorna questa riga alla versione 2.5.0 o superiore
     }
 }
