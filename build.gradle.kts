@@ -4,3 +4,25 @@ plugins {
     alias(libs.plugins.jetbrainsKotlinAndroid) apply false
     id("com.google.gms.google-services") version "4.4.2" apply false
 }
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath("com.android.tools.build:gradle:7.0.2") // Verifica la versione più recente
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.21") // Verifica la versione più recente
+        classpath("androidx.navigation:navigation-safe-args-gradle-plugin:2.5.0") // Aggiorna questa riga alla versione 2.5.0 o superiore
+    }
+}
+
+allprojects {
+    repositories {
+
+    }
+}
+
+tasks.register<Delete>("clean") {
+    delete(rootProject.buildDir)
+}

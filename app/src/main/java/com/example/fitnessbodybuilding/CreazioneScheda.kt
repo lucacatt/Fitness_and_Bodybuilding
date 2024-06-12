@@ -120,11 +120,8 @@ class CreazioneScheda : Fragment() {
                 button.layoutParams = buttonParams
                 button.setPadding(16, 16, 16, 16)
 
-                // Aggiunge un listener al bottone
                 button.setOnClickListener {
-                    // Gestisci l'evento di clic qui
-                    clearFragmentContent(this)
-                    findNavController().navigate(R.id.aggiungi_EsercizioFragment)
+                    findNavController().navigate(CreazioneSchedaDirections.actionCreazioneSchedaToAggiungiEsercizioFragment())
                 }
 
                 // Aggiunge il bottone al container
