@@ -38,6 +38,7 @@ class Registrazione : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        DataManagement.getInstance()
         view.findViewById<Button>(R.id.btnConferma).setOnClickListener {
             try {
                 if (checkTexts()) {

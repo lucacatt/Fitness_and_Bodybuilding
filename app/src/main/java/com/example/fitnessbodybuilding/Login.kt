@@ -37,8 +37,8 @@ class Login : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        DataManagement.getInstance()
         val view = inflater.inflate(R.layout.fragment_login, container, false)
-
         val btnLogin: Button = view.findViewById(R.id.btnLogin)
         val etEmail: EditText = view.findViewById(R.id.etEmail)
         val etPassword: EditText = view.findViewById(R.id.etPassword)
