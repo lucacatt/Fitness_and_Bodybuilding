@@ -27,7 +27,7 @@ class CreazioneScheda : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-    private val listaEsercizi: MutableList<Esercizio> = mutableListOf()
+    private val scheda: Scheda = Scheda()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,7 +84,7 @@ class CreazioneScheda : Fragment() {
                 tableLayout.addView(headerRow)
 
                 // Aggiunge righe e dati alla tabella
-                for (j in 1..6) {
+                for (j in scheda.Esercizi) {
                     val tableRow = TableRow(requireContext())
                     tableRow.layoutParams = TableRow.LayoutParams(
                         TableRow.LayoutParams.MATCH_PARENT,
