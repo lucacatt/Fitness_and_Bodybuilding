@@ -67,7 +67,12 @@
     <fragment
         android:id="@+id/creazione_schedaFragment"
         android:name="com.example.fitnessbodybuilding.CreazioneScheda"
-        android:label="fragment_creazione_scheda" />
+        android:label="fragment_creazione_scheda" >
+
+        <action
+            android:id="@+id/action_creazione_schedaFragment_to_aggiungi_EsercizioFragment"
+            app:destination="@id/aggiungi_EsercizioFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/profileFragment"
@@ -78,5 +83,10 @@
         android:id="@+id/diaryFragment"
         android:name="com.example.fitnessbodybuilding.Diary"
         android:label="fragment_diary" />
+
+    <fragment
+        android:id="@+id/aggiungi_EsercizioFragment"
+        android:name="com.example.fitnessbodybuilding.AggiungiEsercizio"
+        android:label="fragment_aggiungi_esercizio" />
 
 </navigation>

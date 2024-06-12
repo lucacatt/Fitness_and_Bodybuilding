@@ -12,6 +12,7 @@ import android.widget.EditText
 import android.widget.TableLayout
 import android.widget.TableRow
 import android.widget.TextView
+import androidx.navigation.fragment.findNavController
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -55,11 +56,11 @@ class CreazioneScheda : Fragment() {
     private fun generateTables(container: ViewGroup, view: View) {
         container.removeAllViews()
         val giorni: EditText = view.findViewById(R.id.txtSplit)
-        if (giorni.text.toString() != "") {
-            for (i in 0..giorni.text.toString().toInt() - 1) {
+        if (giorni.text.toString().isNotEmpty()) {
+            for (i in 0 until giorni.text.toString().toInt()) {
                 scheda.Esercizi.add(Divisione())
             }
-            for (i in 0..scheda.Esercizi.size - 1) {
+            for (i in 0 until scheda.Esercizi.size) {
                 // Crea una nuova TableLayout
                 val tableLayout = TableLayout(requireContext())
                 tableLayout.layoutParams = TableLayout.LayoutParams(
@@ -87,7 +88,7 @@ class CreazioneScheda : Fragment() {
                 tableLayout.addView(headerRow)
 
                 // Aggiunge righe e dati alla tabella
-                for (j in 0..scheda.Esercizi.get(i).listaEsercizi.size - 1) {
+                for (j in 0 until scheda.Esercizi[i].listaEsercizi.size) {
                     val tableRow = TableRow(requireContext())
                     tableRow.layoutParams = TableRow.LayoutParams(
                         TableRow.LayoutParams.MATCH_PARENT,
@@ -110,6 +111,7 @@ class CreazioneScheda : Fragment() {
                 // Crea un nuovo bottone centrato
                 val button = Button(requireContext())
                 button.text = "Aggiungi esercizio"
+                button.id = i
                 val buttonParams = TableLayout.LayoutParams(
                     TableLayout.LayoutParams.WRAP_CONTENT,
                     TableLayout.LayoutParams.WRAP_CONTENT
@@ -117,6 +119,13 @@ class CreazioneScheda : Fragment() {
                 buttonParams.gravity = Gravity.CENTER
                 button.layoutParams = buttonParams
                 button.setPadding(16, 16, 16, 16)
+
+                // Aggiunge un listener al bottone
+                button.setOnClickListener {
+                    // Gestisci l'evento di clic qui
+                    clearFragmentContent(this)
+                    findNavController().navigate(R.id.aggiungi_EsercizioFragment)
+                }
 
                 // Aggiunge il bottone al container
                 container.addView(button)
@@ -134,8 +143,22 @@ class CreazioneScheda : Fragment() {
         button.layoutParams = buttonParams
         button.setPadding(16, 36, 16, 16)
 
+        // Aggiunge un listener al bottone "Salva"
+        button.setOnClickListener {
+            // Gestisci l'evento di clic qui
+
+        }
+
         // Aggiunge il bottone al container
         container.addView(button)
+    }
+
+
+    private fun clearFragmentContent(fragment: Fragment) {
+        val view = fragment.view
+        if (view is ViewGroup) {
+            view.removeAllViews()
+        }
     }
 
     companion object {
