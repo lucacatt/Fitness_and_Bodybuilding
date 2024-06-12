@@ -10,6 +10,7 @@ class DataManagement private constructor(
     val db: DatabaseReference = FirebaseDatabase.getInstance().reference,
     var utenti: MutableList<User> = mutableListOf(),
     var esercizi: MutableList<Esercizio> = mutableListOf(),
+    var scheda: Scheda = Scheda(),
     var loggato: User? = null
 ) {
 

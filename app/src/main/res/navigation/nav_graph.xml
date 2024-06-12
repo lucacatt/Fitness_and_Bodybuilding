@@ -68,8 +68,15 @@
     <fragment
         android:id="@+id/creazione_schedaFragment"
         android:name="com.example.fitnessbodybuilding.CreazioneScheda"
-        android:label="fragment_creazione_scheda" >
-
+        android:label="fragment_creazione_scheda">
+        <argument
+            android:name="giorno"
+            app:argType="integer"
+            android:defaultValue="1" />
+        <argument
+            android:name="esercizio"
+            app:argType="string"
+            android:defaultValue="0" />
         <action
             android:id="@+id/action_creazioneScheda_to_aggiungiEsercizioFragment"
             app:destination="@id/aggiungiEsercizioFragment" />
@@ -88,6 +95,15 @@
     <fragment
         android:id="@+id/aggiungiEsercizioFragment"
         android:name="com.example.fitnessbodybuilding.AggiungiEsercizio"
-        tools:layout="@layout/fragment_aggiungi_esercizio" />
+        android:label="Aggiungi Esercizio"
+        tools:layout="@layout/fragment_aggiungi_esercizio">
+        <argument
+            android:name="giorno"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_aggiungiEsercizio_to_creazioneScheda"
+            app:destination="@id/creazione_schedaFragment">
+        </action>
+    </fragment>
 
 </navigation>
