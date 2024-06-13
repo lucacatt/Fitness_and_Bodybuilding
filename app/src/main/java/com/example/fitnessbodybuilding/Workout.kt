@@ -13,8 +13,11 @@ import android.widget.EditText
 import android.widget.TableLayout
 import android.widget.TableRow
 import android.widget.TextView
+import androidx.fragment.app.FragmentManager
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -45,7 +48,7 @@ class Workout : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_workout, container, false)
-        DataManagement.getInstance().getSchedaUser()
+        DataManagement.getInstance().setSchedaUser()
         if (DataManagement.getInstance().scheda.Esercizi.isEmpty()) {
             val button: Button = view.findViewById(R.id.btnC)
             button.setOnClickListener {
@@ -243,8 +246,15 @@ class Workout : Fragment() {
             setPadding(16, 16, 16, 16)
             setOnClickListener {
                 DataManagement.getInstance().deleteScheda()
+                clearFragmentContent(this@Workout)
+                DataManagement.getInstance().loadSchedaFromDb()
+
+                requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView3).selectedItemId =
+                    R.id.home
             }
         }
+
+
         container.addView(deleteButton)
     }
 
@@ -255,6 +265,7 @@ class Workout : Fragment() {
             view.removeAllViews()
         }
     }
+
 
     companion object {
         /**
@@ -275,4 +286,5 @@ class Workout : Fragment() {
                 }
             }
     }
+
 }

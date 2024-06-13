@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.setupWithNavController
 import com.example.fitnessbodybuilding.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity(), Registrazione.OnRegistrationCompleteListener {

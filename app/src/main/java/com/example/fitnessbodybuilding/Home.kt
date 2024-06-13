@@ -14,6 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -23,15 +24,13 @@ class Home : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         // Benvenuto
         view.findViewById<TextView>(R.id.tvWelcomeTitle).text =
             "Benvenuto ${DataManagement.getInstance().loggato?.username}!"
@@ -66,15 +65,28 @@ class Home : Fragment() {
             }
         })
 
-        // New Workout Button
         val createNewWorkoutButton = view.findViewById<MaterialButton>(R.id.createNewWorkoutButton)
         createNewWorkoutButton.setOnClickListener {
-            findNavController().navigate(R.id.action_homeFragment_to_workoutFragment)
+            val bottomNavigationView = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView3)
+            bottomNavigationView.selectedItemId = R.id.workout
+
+            val navController = findNavController()
+            if (navController.currentDestination?.id == R.id.homeFragment) {
+                navController.navigate(R.id.action_homeFragment_to_workoutFragment)
+            }
         }
         DataManagement.getInstance().getLastWorkout()?.let { updateLastWorkoutUI(it, view) }
 
 
     }
+
+    private fun clearFragmentContent(fragment: Fragment) {
+        val view = fragment.view
+        if (view is ViewGroup) {
+            view.removeAllViews()
+        }
+    }
+
 
     @SuppressLint("MissingInflatedId")
     private fun updateLastWorkoutUI(lastWorkout: Allenamento, view: View) {

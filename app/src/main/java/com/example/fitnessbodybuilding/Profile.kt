@@ -79,7 +79,8 @@ class Profile : Fragment() {
         if (view is ViewGroup) {
             view.removeAllViews()
         }
-        DataManagement.getInstance().reDo()
+        DataManagement.getInstance().loggato = null
+        DataManagement.getInstance().scheda = Scheda()
         findNavController().navigate(R.id.introductionFragment)
         Toast.makeText(requireContext(), "Logged out successfully", Toast.LENGTH_SHORT).show()
     }

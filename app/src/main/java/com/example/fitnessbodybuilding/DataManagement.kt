@@ -15,7 +15,7 @@ class DataManagement private constructor(
     var esercizi: MutableList<Esercizio> = mutableListOf(),
     var allenamenti: MutableList<Allenamento> = mutableListOf(),
     var scheda: Scheda = Scheda(),
-    private var schede: MutableList<Scheda> = mutableListOf(),
+    var schede: MutableList<Scheda> = mutableListOf(),
     var loggato: User? = null
 ) {
 
@@ -51,7 +51,6 @@ class DataManagement private constructor(
         })
     }
 
-
     fun insertUser(user: User) {
         db.child("users").child(user.id.toString()).setValue(user)
             .addOnSuccessListener {
@@ -78,7 +77,6 @@ class DataManagement private constructor(
         @Volatile
         private var instance: DataManagement? = null
 
-        @RequiresApi(Build.VERSION_CODES.O)
         fun getInstance(): DataManagement =
             instance ?: synchronized(this) {
                 instance ?: DataManagement().also {
@@ -88,8 +86,7 @@ class DataManagement private constructor(
             }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun init() {
+    fun init() {
         loadUsersFromDb()
         loadExerciseFromDb()
         loadSchedaFromDb()
@@ -97,62 +94,46 @@ class DataManagement private constructor(
 
     fun saveScheda() {
         scheda.user = loggato!!
-        scheda.id = getInstance().schede.get(getInstance().schede.size - 1).id + 1
-        for (i in 0 until getInstance().scheda.Esercizi.size) {
-            db.child("scheda")
-                .child((getInstance().schede.get(getInstance().schede.size - 1).id + 1).toString())
-                .setValue(getInstance().scheda)
-                .addOnSuccessListener {
-                    println("fatto")
-                }
-                .addOnFailureListener { e ->
-                    println("Error adding user: $e")
-                }
-        }
+        scheda.id = getInstance().schede.size
+        db.child("scheda").child(scheda.id.toString()).setValue(scheda)
+            .addOnSuccessListener {
+                println("Scheda added successfully")
+            }
+            .addOnFailureListener { e ->
+                println("Error adding scheda: $e")
+            }
+        loadSchedaFromDb()
     }
 
+
     fun loadSchedaFromDb() {
+        schede= mutableListOf()
         db.child("scheda").addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val exList = mutableListOf<Scheda>()
                 for (userSnapshot in dataSnapshot.children) {
                     val scd = userSnapshot.getValue(Scheda::class.java)
                     if (scd != null) {
-                        exList.add(scd)
+                        schede.add(scd)
                     }
                 }
-                schede = exList
             }
-
             override fun onCancelled(databaseError: DatabaseError) {
                 println("Error reading exercises: ${databaseError.message}")
             }
         })
     }
 
-    fun reDo() {
-        utenti = mutableListOf()
-        esercizi = mutableListOf()
-        allenamenti = mutableListOf()
-        scheda = Scheda()
-        schede = mutableListOf()
-        loggato = null
-        init()
-    }
-
-    fun getSchedaUser() {
+    fun setSchedaUser() {
         for (s in schede) {
             if (s.user.id == loggato?.id) {
-                getInstance().scheda = s
-                getInstance().scheda.id =
-                    getInstance().schede.get(getInstance().schede.size - 1).id
+                scheda = s
             }
         }
     }
 
     fun deleteScheda() {
         val schedaRef = db.child("scheda").child(scheda.id.toString()) // Get the specific node
-
+        scheda= Scheda()
         schedaRef.removeValue()
             .addOnSuccessListener {
                 println("Elemento con ID ${scheda.id} eliminato con successo.")
