@@ -14,6 +14,7 @@ class DataManagement private constructor(
     val db: DatabaseReference = FirebaseDatabase.getInstance().reference,
     var utenti: MutableList<User> = mutableListOf(),
     var esercizi: MutableList<Esercizio> = mutableListOf(),
+    var allenamenti: MutableList<Allenamento> = mutableListOf(),
     var scheda: Scheda = Scheda(),
     var loggato: User? = null
 ) {
@@ -126,57 +127,80 @@ class DataManagement private constructor(
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun loadAllenamenti(callback: (List<Allenamento>) -> Unit) {
-        val db = FirebaseDatabase.getInstance().getReference("Allenamenti")
-        val allenamentiList = mutableListOf<Allenamento>()
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    fun loadAllenamenti() {
+        val database = FirebaseDatabase.getInstance()
+        val reference = database.getReference("Allenamenti")
 
-        db.addListenerForSingleValueEvent(object : ValueEventListener {
+        // Aggiungiamo un listener per gestire le risposte dal database
+        reference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                for (dataSnapshot in snapshot.children) {
-                    val id = dataSnapshot.child("id").getValue(Int::class.java) ?: 0
-                    val dataString = dataSnapshot.child("data").getValue(String::class.java) ?: ""
-                    val data = LocalDate.parse(dataString, formatter)
+                val allenamenti = mutableListOf<Allenamento>()
 
-                    val eserciziSnapshot = dataSnapshot.child("divisione").child("listaEsercizi")
-                    val listaEsercizi = mutableListOf<Svolge>()
+                for (childSnapshot in snapshot.children) {
+                    val id = childSnapshot.child("id").getValue(Int::class.java) ?: continue
+                    val data = childSnapshot.child("data").getValue(Long::class.java)?.let { LocalDate.ofEpochDay(it) } ?: continue
+
+                    // Recuperiamo l'utente associato all'allenamento
+                    val utenteId = childSnapshot.child("utente").child("id").getValue(Int::class.java) ?: continue
+                    val username = childSnapshot.child("utente").child("username").getValue(String::class.java) ?: ""
+                    val password = childSnapshot.child("utente").child("password").getValue(String::class.java) ?: ""
+                    val email = childSnapshot.child("utente").child("email").getValue(String::class.java) ?: ""
+                    val peso = childSnapshot.child("utente").child("peso").getValue(Int::class.java) ?: 0
+                    val altezza = childSnapshot.child("utente").child("altezza").getValue(Int::class.java) ?: 0
+                    val utente = User(utenteId, username, password, email, peso, altezza)
+
+                    // Recuperiamo la divisione dell'allenamento
+                    val divisione = Divisione()
+
+                    // Recuperiamo gli esercizi della divisione
+                    val eserciziSnapshot = childSnapshot.child("divisione").child("listaEsercizi")
                     for (esercizioSnapshot in eserciziSnapshot.children) {
-                        val esercizioId = esercizioSnapshot.child("esercizio").child("id")
-                            .getValue(Int::class.java) ?: 0
-                        val nomeEsercizio = esercizioSnapshot.child("esercizio").child("nome")
-                            .getValue(String::class.java) ?: ""
-                        val descrizioneEsercizio =
-                            esercizioSnapshot.child("esercizio").child("descrizione")
-                                .getValue(String::class.java) ?: ""
-                        val kcalEsercizio = esercizioSnapshot.child("esercizio").child("kcal")
-                            .getValue(Int::class.java) ?: 0
-
-                        val esercizio = Esercizio(
-                            esercizioId,
-                            nomeEsercizio,
-                            descrizioneEsercizio,
-                            kcalEsercizio
-                        )
-                        val svolge = Svolge(esercizio)
-                        listaEsercizi.add(svolge)
+                        val esercizioId = esercizioSnapshot.child("esercizio").child("id").getValue(Int::class.java) ?: continue
+                        val nome = esercizioSnapshot.child("esercizio").child("nome").getValue(String::class.java) ?: ""
+                        val descrizione = esercizioSnapshot.child("esercizio").child("descrizione").getValue(String::class.java) ?: ""
+                        val kcal = esercizioSnapshot.child("esercizio").child("kcal").getValue(Int::class.java) ?: 0
+                        val esercizio = Esercizio(esercizioId, nome, descrizione, kcal)
+                        val serie = esercizioSnapshot.child("serie").getValue(Int::class.java) ?: 0
+                        val ripetizioni = esercizioSnapshot.child("ripetizioni").getValue(Int::class.java) ?: 0
+                        val peso = esercizioSnapshot.child("peso").getValue(Int::class.java) ?: 0
+                        val svolge = Svolge(esercizio, serie, ripetizioni, peso)
+                        divisione.listaEsercizi.add(svolge)
                     }
 
-                    val divisione = Divisione(listaEsercizi)
-                    val allenamento = Allenamento(id, divisione, data)
-                    allenamentiList.add(allenamento)
+                    // Creiamo l'oggetto Allenamento e lo aggiungiamo alla lista
+                    val allenamento = Allenamento(id, divisione, data, utente)
+                    allenamenti.add(allenamento)
                 }
-                callback(allenamentiList)
             }
-
             override fun onCancelled(error: DatabaseError) {
-                println("Error loading Allenamenti: $error")
+                println("Failed to read value: ${error.message}")
             }
         })
     }
 
     fun insertAllenamento(allenamento: Allenamento) {
         val db = FirebaseDatabase.getInstance().getReference("Allenamenti")
-        db.child(allenamento.id.toString()).setValue(allenamento)
+
+        // Convertiamo l'oggetto User in una mappa di valori chiave/valore
+        val userMap = mapOf(
+            "id" to allenamento.utente.id,
+            "username" to allenamento.utente.username,
+            "password" to allenamento.utente.password,
+            "email" to allenamento.utente.email,
+            "peso" to allenamento.utente.peso,
+            "altezza" to allenamento.utente.altezza
+        )
+
+        // Creiamo la mappa per l'oggetto Allenamento
+        val allenamentoMap = mapOf(
+            "id" to allenamento.id,
+            "divisione" to allenamento.divisione,
+            "data" to allenamento.data.toString(),  // Convertiamo LocalDate a String per Firebase
+            "utente" to userMap  // Inseriamo la mappa dell'utente nell'oggetto Allenamento
+        )
+
+        // Inseriamo l'oggetto Allenamento nel database Firebase
+        db.child(allenamento.id.toString()).setValue(allenamentoMap)
             .addOnSuccessListener {
                 println("Allenamento added with ID: ${allenamento.id}")
             }
