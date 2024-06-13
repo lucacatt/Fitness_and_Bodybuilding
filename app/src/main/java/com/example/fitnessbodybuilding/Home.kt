@@ -1,15 +1,18 @@
 package com.example.fitnessbodybuilding
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
+import java.time.LocalDate
 
 class Home : Fragment() {
 
@@ -20,6 +23,7 @@ class Home : Fragment() {
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -61,6 +65,7 @@ class Home : Fragment() {
             findNavController().navigate(R.id.action_homeFragment_to_workoutFragment)
         }
 
+        //DataManagement.getInstance().loadAllenamenti()
 
     }
 }
