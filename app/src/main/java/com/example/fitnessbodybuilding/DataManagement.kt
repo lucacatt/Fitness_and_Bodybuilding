@@ -1,10 +1,14 @@
 package com.example.fitnessbodybuilding
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class DataManagement private constructor(
     val db: DatabaseReference = FirebaseDatabase.getInstance().reference,
@@ -119,4 +123,41 @@ class DataManagement private constructor(
                 println("Error updating user: $e")
             }
     }
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun loadAllenamenti(callback: (List<Allenamento>) -> Unit) {
+        val db = FirebaseDatabase.getInstance().getReference("Allenamenti")
+        val allenamentiList = mutableListOf<Allenamento>()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
+        db.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (dataSnapshot in snapshot.children) {
+                    val id = dataSnapshot.child("id").getValue(Int::class.java) ?: 0
+                    val divisioneNome = dataSnapshot.child("divisione").getValue(String::class.java) ?: ""
+                    val divisione = Divisione(nome = divisioneNome)
+                    val dataString = dataSnapshot.child("data").getValue(String::class.java) ?: ""
+                    val data = LocalDate.parse(dataString, formatter)
+
+                    val allenamento = Allenamento(id, divisione, data)
+                    allenamentiList.add(allenamento)
+                }
+                callback(allenamentiList)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                println("Error loading Allenamenti: $error")
+            }
+        })
+    }
+    fun insertAllenamento(allenamento: Allenamento) {
+        val db = FirebaseDatabase.getInstance().getReference("Allenamenti")
+        db.child(allenamento.id.toString()).setValue(allenamento)
+            .addOnSuccessListener {
+                println("Allenamento added with ID: ${allenamento.id}")
+            }
+            .addOnFailureListener { e ->
+                println("Error adding Allenamento: $e")
+            }
+    }
+
 }
