@@ -2,6 +2,7 @@ package com.example.fitnessbodybuilding
 
 import android.graphics.Typeface
 import android.os.Bundle
+import android.text.InputType
 import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -60,6 +61,7 @@ class CreazioneScheda : Fragment() {
         container.removeAllViews()
         val giorni: EditText = view.findViewById(R.id.txtSplit)
         if (giorni.text.toString().isNotEmpty()) {
+            DataManagement.getInstance().scheda.Esercizi = mutableListOf()
             for (i in 0 until giorni.text.toString().toInt()) {
                 DataManagement.getInstance().scheda.Esercizi.add(Divisione())
             }
@@ -159,6 +161,17 @@ class CreazioneScheda : Fragment() {
     private fun generateTablesWithEx(container: ViewGroup, view: View) {
         container.removeAllViews()
         for (i in 0 until DataManagement.getInstance().scheda.Esercizi.size) {
+            // Aggiunge l'intestazione del giorno
+            val dayTextView = TextView(requireContext())
+            dayTextView.text = "Giorno ${i + 1}"
+            dayTextView.gravity = Gravity.CENTER
+            dayTextView.setPadding(8, 8, 8, 8)
+            dayTextView.textSize = 24f
+            dayTextView.setTypeface(null, Typeface.BOLD)
+
+            // Aggiunge l'intestazione al container
+            container.addView(dayTextView)
+
             // Crea una nuova TableLayout
             val tableLayout = TableLayout(requireContext())
             tableLayout.layoutParams = TableLayout.LayoutParams(
@@ -168,12 +181,12 @@ class CreazioneScheda : Fragment() {
             tableLayout.setPadding(16, 16, 16, 16)
 
             // Aggiunge l'intestazione alla tabella
-            val headerRow1 = TableRow(requireContext())
-            headerRow1.layoutParams = TableRow.LayoutParams(
+            var headerRow = TableRow(requireContext())
+            headerRow.layoutParams = TableRow.LayoutParams(
                 TableRow.LayoutParams.MATCH_PARENT,
                 TableRow.LayoutParams.WRAP_CONTENT
             )
-            headerRow1.gravity = Gravity.CENTER
+            headerRow.gravity = Gravity.CENTER
 
             val headerTextView1 = TextView(requireContext())
             headerTextView1.text = "Esercizio"
@@ -182,7 +195,16 @@ class CreazioneScheda : Fragment() {
             headerTextView1.textSize = 18f
             headerTextView1.setTypeface(null, Typeface.BOLD)
 
-            headerRow1.addView(headerTextView1)
+            headerRow.addView(headerTextView1)
+
+            tableLayout.addView(headerRow)
+
+            headerRow = TableRow(requireContext())
+            headerRow.layoutParams = TableRow.LayoutParams(
+                TableRow.LayoutParams.MATCH_PARENT,
+                TableRow.LayoutParams.WRAP_CONTENT
+            )
+            headerRow.gravity = Gravity.CENTER
 
             val headerTextView2 = TextView(requireContext())
             headerTextView2.text = "Serie"
@@ -191,18 +213,50 @@ class CreazioneScheda : Fragment() {
             headerTextView2.textSize = 18f
             headerTextView2.setTypeface(null, Typeface.BOLD)
 
-            headerRow1.addView(headerTextView2)
+            headerRow.addView(headerTextView2)
 
-            tableLayout.addView(headerRow1)
-            val headerTextView = TextView(requireContext())
-            headerTextView.text = "Giorno " + (i + 1)
-            headerTextView.gravity = Gravity.CENTER
-            headerTextView.setPadding(8, 8, 8, 8)
-            headerTextView.textSize = 18f
-            headerTextView.setTypeface(null, Typeface.BOLD)
+            val headerTextView3 = TextView(requireContext())
+            headerTextView3.text = "Ripetizioni"
+            headerTextView3.gravity = Gravity.CENTER
+            headerTextView3.setPadding(8, 8, 8, 8)
+            headerTextView3.textSize = 18f
+            headerTextView3.setTypeface(null, Typeface.BOLD)
 
+            headerRow.addView(headerTextView3)
+
+            val headerTextView4 = TextView(requireContext())
+            headerTextView4.text = "Peso"
+            headerTextView4.gravity = Gravity.CENTER
+            headerTextView4.setPadding(8, 8, 8, 8)
+            headerTextView4.textSize = 18f
+            headerTextView4.setTypeface(null, Typeface.BOLD)
+
+            headerRow.addView(headerTextView4)
+
+            tableLayout.addView(headerRow)
             // Aggiunge righe e dati alla tabella
             for (j in 0 until DataManagement.getInstance().scheda.Esercizi[i].listaEsercizi.size) {
+                val exerciseNameRow = TableRow(requireContext())
+                exerciseNameRow.layoutParams = TableRow.LayoutParams(
+                    TableRow.LayoutParams.MATCH_PARENT,
+                    TableRow.LayoutParams.WRAP_CONTENT
+                )
+                exerciseNameRow.gravity = Gravity.CENTER
+
+                val exerciseNameTextView = TextView(requireContext())
+                exerciseNameTextView.text =
+                    DataManagement.getInstance().scheda.Esercizi[i].listaEsercizi[j].Esercizio.nome
+                exerciseNameTextView.gravity = Gravity.CENTER
+                exerciseNameTextView.setPadding(8, 8, 8, 8)
+                exerciseNameTextView.layoutParams = TableRow.LayoutParams(
+                    0,
+                    TableRow.LayoutParams.WRAP_CONTENT,
+                    1f
+                ) // Imposta la larghezza della colonna
+
+                exerciseNameRow.addView(exerciseNameTextView)
+                tableLayout.addView(exerciseNameRow)
+
                 val tableRow = TableRow(requireContext())
                 tableRow.layoutParams = TableRow.LayoutParams(
                     TableRow.LayoutParams.MATCH_PARENT,
@@ -210,44 +264,35 @@ class CreazioneScheda : Fragment() {
                 )
                 tableRow.gravity = Gravity.CENTER
 
-                val textView = TextView(requireContext())
-                textView.text =
-                    DataManagement.getInstance().scheda.Esercizi[i].listaEsercizi.get(j).Esercizio.nome
-                textView.gravity = Gravity.CENTER
-                textView.setPadding(8, 8, 8, 8)
-                textView.layoutParams = TableRow.LayoutParams(
-                    0,
+                // Aggiungi il pulsante "+" alla riga per Serie
+                val plusButtonSerie = Button(requireContext())
+                plusButtonSerie.text = "+"
+                plusButtonSerie.layoutParams = TableRow.LayoutParams(
+                    0, // Imposta la larghezza della colonna a 0
                     TableRow.LayoutParams.WRAP_CONTENT,
-                    1f
-                ) // Imposta la larghezza della colonna
-
-                tableRow.addView(textView)
-
-                // Aggiungi il pulsante "+" alla riga
-                val plusButton = Button(requireContext())
-                plusButton.text = "+"
-                plusButton.layoutParams = TableRow.LayoutParams(
-                    TableRow.LayoutParams.WRAP_CONTENT,
-                    TableRow.LayoutParams.WRAP_CONTENT
+                    1f // Imposta il peso della colonna a 1
                 )
-                plusButton.setPadding(4, 4, 4, 4) // Riduci la spaziatura del pulsante
-                plusButton.setOnClickListener {
-                    val valueTextView = tableRow.findViewWithTag<TextView>("valueTextView")
+                plusButtonSerie.textSize = 12f // Riduce la dimensione del testo
+                plusButtonSerie.setPadding(0, 0, 0, 0) // Rimuove il padding
+                plusButtonSerie.setOnClickListener {
+                    val valueTextView = tableRow.findViewWithTag<TextView>("valueTextViewSerie")
                     var currentValue = valueTextView?.text.toString().toInt()
                     currentValue++
                     valueTextView?.text = currentValue.toString()
                 }
 
-                // Aggiungi il pulsante "-" alla riga
-                val minusButton = Button(requireContext())
-                minusButton.text = "-"
-                minusButton.layoutParams = TableRow.LayoutParams(
+                // Aggiungi il pulsante "-" alla riga per Serie
+                val minusButtonSerie = Button(requireContext())
+                minusButtonSerie.text = "-"
+                minusButtonSerie.layoutParams = TableRow.LayoutParams(
+                    0, // Imposta la larghezza della colonna a 0
                     TableRow.LayoutParams.WRAP_CONTENT,
-                    TableRow.LayoutParams.WRAP_CONTENT
+                    1f // Imposta il peso della colonna a 1
                 )
-                minusButton.setPadding(4, 4, 4, 4) // Riduci la spaziatura del pulsante
-                minusButton.setOnClickListener {
-                    val valueTextView = tableRow.findViewWithTag<TextView>("valueTextView")
+                minusButtonSerie.textSize = 12f // Riduce la dimensione del testo
+                minusButtonSerie.setPadding(0, 0, 0, 0) // Rimuove il padding
+                minusButtonSerie.setOnClickListener {
+                    val valueTextView = tableRow.findViewWithTag<TextView>("valueTextViewSerie")
                     var currentValue = valueTextView?.text.toString().toInt()
                     if (currentValue > 0) {
                         currentValue--
@@ -255,20 +300,96 @@ class CreazioneScheda : Fragment() {
                     }
                 }
 
-                // Aggiungi la TextView con il numero
-                val valueTextView = TextView(requireContext())
-                valueTextView.text = "0"
-                valueTextView.gravity = Gravity.CENTER
-                valueTextView.tag = "valueTextView" // Aggiungi un tag alla TextView
-                valueTextView.layoutParams = TableRow.LayoutParams(
+                // Aggiungi la TextView con il numero per Serie
+                val valueTextViewSerie = TextView(requireContext())
+                valueTextViewSerie.text = "0"
+                valueTextViewSerie.gravity = Gravity.CENTER
+                valueTextViewSerie.tag = "valueTextViewSerie" // Aggiungi un tag alla TextView
+                valueTextViewSerie.layoutParams = TableRow.LayoutParams(
+                    0, // Imposta la larghezza della colonna a 0
                     TableRow.LayoutParams.WRAP_CONTENT,
-                    TableRow.LayoutParams.WRAP_CONTENT
+                    1f // Imposta il peso della colonna a 1
                 )
+                valueTextViewSerie.textSize = 12f // Riduce la dimensione del testo
+                valueTextViewSerie.setPadding(0, 0, 0, 0) // Rimuove il padding
 
-                // Aggiungi i pulsanti e la TextView alla riga
-                tableRow.addView(plusButton)
-                tableRow.addView(valueTextView)
-                tableRow.addView(minusButton)
+                // Aggiungi i pulsanti e la TextView alla riga per Serie
+                tableRow.addView(plusButtonSerie)
+                tableRow.addView(valueTextViewSerie)
+                tableRow.addView(minusButtonSerie)
+
+                // Aggiungi il pulsante "+" alla riga per Ripetizioni
+                val plusButtonRipetizioni = Button(requireContext())
+                plusButtonRipetizioni.text = "+"
+                plusButtonRipetizioni.layoutParams = TableRow.LayoutParams(
+                    0, // Imposta la larghezza della colonna a 0
+                    TableRow.LayoutParams.WRAP_CONTENT,
+                    1f // Imposta il peso della colonna a 1
+                )
+                plusButtonRipetizioni.textSize = 12f // Riduce la dimensione del testo
+                plusButtonRipetizioni.setPadding(0, 0, 0, 0) // Rimuove il padding
+                plusButtonRipetizioni.setOnClickListener {
+                    val valueTextView =
+                        tableRow.findViewWithTag<TextView>("valueTextViewRipetizioni")
+                    var currentValue = valueTextView?.text.toString().toInt()
+                    currentValue++
+                    valueTextView?.text = currentValue.toString()
+                }
+
+                // Aggiungi il pulsante "-" alla riga per Ripetizioni
+                val minusButtonRipetizioni = Button(requireContext())
+                minusButtonRipetizioni.text = "-"
+                minusButtonRipetizioni.layoutParams = TableRow.LayoutParams(
+                    0, // Imposta la larghezza della colonna a 0
+                    TableRow.LayoutParams.WRAP_CONTENT,
+                    1f // Imposta il peso della colonna a 1
+                )
+                minusButtonRipetizioni.textSize = 12f // Riduce la dimensione del testo
+                minusButtonRipetizioni.setPadding(0, 0, 0, 0) // Rimuove il padding
+                minusButtonRipetizioni.setOnClickListener {
+                    val valueTextView =
+                        tableRow.findViewWithTag<TextView>("valueTextViewRipetizioni")
+                    var currentValue = valueTextView?.text.toString().toInt()
+                    if (currentValue > 0) {
+                        currentValue--
+                        valueTextView?.text = currentValue.toString()
+                    }
+                }
+
+                // Aggiungi la TextView con il numero per Ripetizioni
+                val valueTextViewRipetizioni = TextView(requireContext())
+                valueTextViewRipetizioni.text = "0"
+                valueTextViewRipetizioni.gravity = Gravity.CENTER
+                valueTextViewRipetizioni.tag =
+                    "valueTextViewRipetizioni" // Aggiungi un tag alla TextView
+                valueTextViewRipetizioni.layoutParams = TableRow.LayoutParams(
+                    0, // Imposta la larghezza della colonna a 0
+                    TableRow.LayoutParams.WRAP_CONTENT,
+                    1f // Imposta il peso della colonna a 1
+                )
+                valueTextViewRipetizioni.textSize = 12f // Riduce la dimensione del testo
+                valueTextViewRipetizioni.setPadding(0, 0, 0, 0) // Rimuove il padding
+
+                // Aggiungi i pulsanti e la TextView alla riga per Ripetizioni
+                tableRow.addView(plusButtonRipetizioni)
+                tableRow.addView(valueTextViewRipetizioni)
+                tableRow.addView(minusButtonRipetizioni)
+
+                // Aggiungi un EditText per il peso
+                val pesoEditText = EditText(requireContext())
+                pesoEditText.hint = "Peso"
+                pesoEditText.gravity = Gravity.CENTER
+                pesoEditText.inputType = InputType.TYPE_CLASS_NUMBER
+                pesoEditText.layoutParams = TableRow.LayoutParams(
+                    0, // Imposta la larghezza della colonna a 0
+                    TableRow.LayoutParams.WRAP_CONTENT,
+                    1f // Imposta il peso della colonna a 1
+                )
+                pesoEditText.textSize = 12f // Riduce la dimensione del testo
+                pesoEditText.setPadding(0, 0, 0, 0) // Rimuove il padding
+
+                // Aggiungi il campo di inserimento del peso alla riga
+                tableRow.addView(pesoEditText)
 
                 tableLayout.addView(tableRow)
             }
@@ -311,30 +432,47 @@ class CreazioneScheda : Fragment() {
 
         // Aggiunge un listener al bottone "Salva"
         button.setOnClickListener {
-            val tablesList = mutableListOf<List<Int>>()
+            val tablesList = mutableListOf<List<Triple<Int, Int, Int>>>()
 
             for (i in 0 until container.childCount) {
                 val child = container.getChildAt(i)
                 if (child is TableLayout) {
-                    val tableValues = mutableListOf<Int>()
+                    val tableValues = mutableListOf<Triple<Int, Int, Int>>()
                     for (j in 0 until child.childCount) {
                         val row = child.getChildAt(j)
                         if (row is TableRow) {
+                            var serieValue = 0
+                            var ripetizioniValue = 0
+                            var pesoValue = 0
                             for (k in 0 until row.childCount) {
                                 val element = row.getChildAt(k)
-                                if (element is TextView && element.tag == "valueTextView") {
-                                    tableValues.add(element.text.toString().toInt())
+                                if (element is TextView && element.tag == "valueTextViewSerie") {
+                                    serieValue = element.text.toString().toInt()
+                                }
+                                if (element is TextView && element.tag == "valueTextViewRipetizioni") {
+                                    ripetizioniValue = element.text.toString().toInt()
+                                }
+                                if (element is EditText) {
+                                    pesoValue = if (element.text.toString().isNotEmpty()) {
+                                        element.text.toString().toInt()
+                                    } else {
+                                        0
+                                    }
                                 }
                             }
+                            tableValues.add(Triple(serieValue, ripetizioniValue, pesoValue))
                         }
                     }
                     tablesList.add(tableValues)
                 }
             }
+
             for (i in 0 until DataManagement.getInstance().scheda.Esercizi.size) {
                 for (j in 0 until DataManagement.getInstance().scheda.Esercizi[i].listaEsercizi.size) {
-                    DataManagement.getInstance().scheda.Esercizi[i].listaEsercizi.get(j).serie =
-                        tablesList.get(i).get(j)
+                    val (serie, ripetizioni, peso) = tablesList[i][j]
+                    DataManagement.getInstance().scheda.Esercizi[i].listaEsercizi[j].serie = serie
+                    DataManagement.getInstance().scheda.Esercizi[i].listaEsercizi[j].ripetizioni = ripetizioni
+                    DataManagement.getInstance().scheda.Esercizi[i].listaEsercizi[j].peso = peso
                 }
             }
         }
@@ -342,7 +480,6 @@ class CreazioneScheda : Fragment() {
         // Aggiunge il bottone al container
         container.addView(button)
     }
-
 
     private fun clearFragmentContent(fragment: Fragment) {
         val view = fragment.view
