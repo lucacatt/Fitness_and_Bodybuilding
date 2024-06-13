@@ -78,6 +78,7 @@ class DataManagement private constructor(
         @Volatile
         private var instance: DataManagement? = null
 
+        @RequiresApi(Build.VERSION_CODES.O)
         fun getInstance(): DataManagement =
             instance ?: synchronized(this) {
                 instance ?: DataManagement().also {
@@ -87,6 +88,7 @@ class DataManagement private constructor(
             }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun init() {
         loadUsersFromDb()
         loadExerciseFromDb()
@@ -194,21 +196,26 @@ class DataManagement private constructor(
             }
     }
 
+    fun getLastWorkout(): Allenamento? {
+        for (allenamento in allenamenti) {
+            if (allenamento.utente.id == loggato?.id) {
+                return allenamento
+            }
+        }
+        return null
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     fun loadAllenamenti() {
-        val database = FirebaseDatabase.getInstance()
-        val reference = database.getReference("Allenamenti")
-
-        // Aggiungiamo un listener per gestire le risposte dal database
-        reference.addValueEventListener(object : ValueEventListener {
+        db.child("Allenamenti").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val allenamenti = mutableListOf<Allenamento>()
-
                 for (childSnapshot in snapshot.children) {
+                    // Skip null entries
+                    if (childSnapshot.value == null) continue
                     val id = childSnapshot.child("id").getValue(Int::class.java) ?: continue
-                    val data = childSnapshot.child("data").getValue(Long::class.java)
-                        ?.let { LocalDate.ofEpochDay(it) } ?: continue
-
+                    val dataString =
+                        childSnapshot.child("data").getValue(String::class.java) ?: continue
+                    val data = LocalDate.parse(dataString)
                     // Recuperiamo l'utente associato all'allenamento
                     val utenteId =
                         childSnapshot.child("utente").child("id").getValue(Int::class.java)
@@ -263,6 +270,7 @@ class DataManagement private constructor(
             }
         })
     }
+
 
     fun insertAllenamento(allenamento: Allenamento) {
         val db = FirebaseDatabase.getInstance().getReference("Allenamenti")
