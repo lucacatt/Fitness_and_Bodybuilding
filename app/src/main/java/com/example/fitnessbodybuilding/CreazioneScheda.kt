@@ -14,6 +14,7 @@ import android.widget.TableLayout
 import android.widget.TableRow
 import android.widget.TextView
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.fitnessbodybuilding.databinding.FragmentCreazioneSchedaBinding
 
@@ -460,7 +461,8 @@ class CreazioneScheda : Fragment() {
                                     }
                                 }
                             }
-                            tableValues.add(Triple(serieValue, ripetizioniValue, pesoValue))
+                            if (serieValue != 0 && ripetizioniValue != 0 && pesoValue != 0)
+                                tableValues.add(Triple(serieValue, ripetizioniValue, pesoValue))
                         }
                     }
                     tablesList.add(tableValues)
@@ -471,10 +473,13 @@ class CreazioneScheda : Fragment() {
                 for (j in 0 until DataManagement.getInstance().scheda.Esercizi[i].listaEsercizi.size) {
                     val (serie, ripetizioni, peso) = tablesList[i][j]
                     DataManagement.getInstance().scheda.Esercizi[i].listaEsercizi[j].serie = serie
-                    DataManagement.getInstance().scheda.Esercizi[i].listaEsercizi[j].ripetizioni = ripetizioni
+                    DataManagement.getInstance().scheda.Esercizi[i].listaEsercizi[j].ripetizioni =
+                        ripetizioni
                     DataManagement.getInstance().scheda.Esercizi[i].listaEsercizi[j].peso = peso
                 }
             }
+            DataManagement.getInstance().saveScheda()
+            findNavController().navigate(R.id.action_creazione_schedaFragment_to_workoutFragment)
         }
 
         // Aggiunge il bottone al container

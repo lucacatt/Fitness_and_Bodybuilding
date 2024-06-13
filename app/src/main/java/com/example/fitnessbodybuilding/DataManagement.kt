@@ -8,7 +8,6 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 class DataManagement private constructor(
     val db: DatabaseReference = FirebaseDatabase.getInstance().reference,
@@ -16,6 +15,7 @@ class DataManagement private constructor(
     var esercizi: MutableList<Esercizio> = mutableListOf(),
     var allenamenti: MutableList<Allenamento> = mutableListOf(),
     var scheda: Scheda = Scheda(),
+    private var schede: MutableList<Scheda> = mutableListOf(),
     var loggato: User? = null
 ) {
 
@@ -90,6 +90,74 @@ class DataManagement private constructor(
     private fun init() {
         loadUsersFromDb()
         loadExerciseFromDb()
+        loadSchedaFromDb()
+    }
+
+    fun saveScheda() {
+        scheda.user = loggato!!
+        scheda.id = getInstance().schede.get(getInstance().schede.size - 1).id + 1
+        for (i in 0 until getInstance().scheda.Esercizi.size) {
+            db.child("scheda")
+                .child((getInstance().schede.get(getInstance().schede.size - 1).id + 1).toString())
+                .setValue(getInstance().scheda)
+                .addOnSuccessListener {
+                    println("fatto")
+                }
+                .addOnFailureListener { e ->
+                    println("Error adding user: $e")
+                }
+        }
+    }
+
+    fun loadSchedaFromDb() {
+        db.child("scheda").addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val exList = mutableListOf<Scheda>()
+                for (userSnapshot in dataSnapshot.children) {
+                    val scd = userSnapshot.getValue(Scheda::class.java)
+                    if (scd != null) {
+                        exList.add(scd)
+                    }
+                }
+                schede = exList
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                println("Error reading exercises: ${databaseError.message}")
+            }
+        })
+    }
+
+    fun reDo() {
+        utenti = mutableListOf()
+        esercizi = mutableListOf()
+        allenamenti = mutableListOf()
+        scheda = Scheda()
+        schede = mutableListOf()
+        loggato = null
+        init()
+    }
+
+    fun getSchedaUser() {
+        for (s in schede) {
+            if (s.user.id == loggato?.id) {
+                getInstance().scheda = s
+                getInstance().scheda.id =
+                    getInstance().schede.get(getInstance().schede.size - 1).id
+            }
+        }
+    }
+
+    fun deleteScheda() {
+        val schedaRef = db.child("scheda").child(scheda.id.toString()) // Get the specific node
+
+        schedaRef.removeValue()
+            .addOnSuccessListener {
+                println("Elemento con ID ${scheda.id} eliminato con successo.")
+            }
+            .addOnFailureListener { error ->
+                println("Errore nell'eliminazione dell'elemento: ${error.message}")
+            }
     }
 
     fun loadExerciseFromDb() {
@@ -138,15 +206,27 @@ class DataManagement private constructor(
 
                 for (childSnapshot in snapshot.children) {
                     val id = childSnapshot.child("id").getValue(Int::class.java) ?: continue
-                    val data = childSnapshot.child("data").getValue(Long::class.java)?.let { LocalDate.ofEpochDay(it) } ?: continue
+                    val data = childSnapshot.child("data").getValue(Long::class.java)
+                        ?.let { LocalDate.ofEpochDay(it) } ?: continue
 
                     // Recuperiamo l'utente associato all'allenamento
-                    val utenteId = childSnapshot.child("utente").child("id").getValue(Int::class.java) ?: continue
-                    val username = childSnapshot.child("utente").child("username").getValue(String::class.java) ?: ""
-                    val password = childSnapshot.child("utente").child("password").getValue(String::class.java) ?: ""
-                    val email = childSnapshot.child("utente").child("email").getValue(String::class.java) ?: ""
-                    val peso = childSnapshot.child("utente").child("peso").getValue(Int::class.java) ?: 0
-                    val altezza = childSnapshot.child("utente").child("altezza").getValue(Int::class.java) ?: 0
+                    val utenteId =
+                        childSnapshot.child("utente").child("id").getValue(Int::class.java)
+                            ?: continue
+                    val username =
+                        childSnapshot.child("utente").child("username").getValue(String::class.java)
+                            ?: ""
+                    val password =
+                        childSnapshot.child("utente").child("password").getValue(String::class.java)
+                            ?: ""
+                    val email =
+                        childSnapshot.child("utente").child("email").getValue(String::class.java)
+                            ?: ""
+                    val peso =
+                        childSnapshot.child("utente").child("peso").getValue(Int::class.java) ?: 0
+                    val altezza =
+                        childSnapshot.child("utente").child("altezza").getValue(Int::class.java)
+                            ?: 0
                     val utente = User(utenteId, username, password, email, peso, altezza)
 
                     // Recuperiamo la divisione dell'allenamento
@@ -155,13 +235,18 @@ class DataManagement private constructor(
                     // Recuperiamo gli esercizi della divisione
                     val eserciziSnapshot = childSnapshot.child("divisione").child("listaEsercizi")
                     for (esercizioSnapshot in eserciziSnapshot.children) {
-                        val esercizioId = esercizioSnapshot.child("esercizio").child("id").getValue(Int::class.java) ?: continue
-                        val nome = esercizioSnapshot.child("esercizio").child("nome").getValue(String::class.java) ?: ""
-                        val descrizione = esercizioSnapshot.child("esercizio").child("descrizione").getValue(String::class.java) ?: ""
-                        val kcal = esercizioSnapshot.child("esercizio").child("kcal").getValue(Int::class.java) ?: 0
+                        val esercizioId = esercizioSnapshot.child("esercizio").child("id")
+                            .getValue(Int::class.java) ?: continue
+                        val nome = esercizioSnapshot.child("esercizio").child("nome")
+                            .getValue(String::class.java) ?: ""
+                        val descrizione = esercizioSnapshot.child("esercizio").child("descrizione")
+                            .getValue(String::class.java) ?: ""
+                        val kcal = esercizioSnapshot.child("esercizio").child("kcal")
+                            .getValue(Int::class.java) ?: 0
                         val esercizio = Esercizio(esercizioId, nome, descrizione, kcal)
                         val serie = esercizioSnapshot.child("serie").getValue(Int::class.java) ?: 0
-                        val ripetizioni = esercizioSnapshot.child("ripetizioni").getValue(Int::class.java) ?: 0
+                        val ripetizioni =
+                            esercizioSnapshot.child("ripetizioni").getValue(Int::class.java) ?: 0
                         val peso = esercizioSnapshot.child("peso").getValue(Int::class.java) ?: 0
                         val svolge = Svolge(esercizio, serie, ripetizioni, peso)
                         divisione.listaEsercizi.add(svolge)
@@ -172,6 +257,7 @@ class DataManagement private constructor(
                     allenamenti.add(allenamento)
                 }
             }
+
             override fun onCancelled(error: DatabaseError) {
                 println("Failed to read value: ${error.message}")
             }

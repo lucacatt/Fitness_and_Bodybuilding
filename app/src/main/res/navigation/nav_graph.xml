@@ -80,6 +80,9 @@
         <action
             android:id="@+id/action_creazioneScheda_to_aggiungiEsercizioFragment"
             app:destination="@id/aggiungiEsercizioFragment" />
+        <action
+            android:id="@+id/action_creazione_schedaFragment_to_workoutFragment"
+            app:destination="@id/workoutFragment" />
     </fragment>
 
     <fragment
