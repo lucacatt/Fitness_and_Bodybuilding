@@ -55,7 +55,7 @@ class DataManagement private constructor(
         db.child("users").child(user.id.toString()).setValue(user)
             .addOnSuccessListener {
                 println("User added with ID: ${user.id}")
-                loggato=user
+                loggato = user
                 utenti.add(user)
             }
             .addOnFailureListener { e ->
@@ -93,7 +93,7 @@ class DataManagement private constructor(
 
     fun loadExerciseFromDb() {
         db.child("Esercizio").addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot)  {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val exList = mutableListOf<Esercizio>()
                 for (userSnapshot in dataSnapshot.children) {
                     val esercizio = userSnapshot.getValue(Esercizio::class.java)
@@ -109,6 +109,7 @@ class DataManagement private constructor(
             }
         })
     }
+
     fun updateUser(user: User) {
         db.child("users").child(user.id.toString()).setValue(user)
             .addOnSuccessListener {
@@ -123,6 +124,7 @@ class DataManagement private constructor(
                 println("Error updating user: $e")
             }
     }
+
     @RequiresApi(Build.VERSION_CODES.O)
     fun loadAllenamenti(callback: (List<Allenamento>) -> Unit) {
         val db = FirebaseDatabase.getInstance().getReference("Allenamenti")
@@ -133,11 +135,33 @@ class DataManagement private constructor(
             override fun onDataChange(snapshot: DataSnapshot) {
                 for (dataSnapshot in snapshot.children) {
                     val id = dataSnapshot.child("id").getValue(Int::class.java) ?: 0
-                    val divisioneNome = dataSnapshot.child("divisione").getValue(String::class.java) ?: ""
-                    val divisione = Divisione(nome = divisioneNome)
                     val dataString = dataSnapshot.child("data").getValue(String::class.java) ?: ""
                     val data = LocalDate.parse(dataString, formatter)
 
+                    val eserciziSnapshot = dataSnapshot.child("divisione").child("listaEsercizi")
+                    val listaEsercizi = mutableListOf<Svolge>()
+                    for (esercizioSnapshot in eserciziSnapshot.children) {
+                        val esercizioId = esercizioSnapshot.child("esercizio").child("id")
+                            .getValue(Int::class.java) ?: 0
+                        val nomeEsercizio = esercizioSnapshot.child("esercizio").child("nome")
+                            .getValue(String::class.java) ?: ""
+                        val descrizioneEsercizio =
+                            esercizioSnapshot.child("esercizio").child("descrizione")
+                                .getValue(String::class.java) ?: ""
+                        val kcalEsercizio = esercizioSnapshot.child("esercizio").child("kcal")
+                            .getValue(Int::class.java) ?: 0
+
+                        val esercizio = Esercizio(
+                            esercizioId,
+                            nomeEsercizio,
+                            descrizioneEsercizio,
+                            kcalEsercizio
+                        )
+                        val svolge = Svolge(esercizio)
+                        listaEsercizi.add(svolge)
+                    }
+
+                    val divisione = Divisione(listaEsercizi)
                     val allenamento = Allenamento(id, divisione, data)
                     allenamentiList.add(allenamento)
                 }
@@ -149,6 +173,7 @@ class DataManagement private constructor(
             }
         })
     }
+
     fun insertAllenamento(allenamento: Allenamento) {
         val db = FirebaseDatabase.getInstance().getReference("Allenamenti")
         db.child(allenamento.id.toString()).setValue(allenamento)
