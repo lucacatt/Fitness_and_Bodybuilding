@@ -194,6 +194,12 @@ class CreazioneScheda : Fragment() {
             headerRow1.addView(headerTextView2)
 
             tableLayout.addView(headerRow1)
+            val headerTextView = TextView(requireContext())
+            headerTextView.text = "Giorno " + (i + 1)
+            headerTextView.gravity = Gravity.CENTER
+            headerTextView.setPadding(8, 8, 8, 8)
+            headerTextView.textSize = 18f
+            headerTextView.setTypeface(null, Typeface.BOLD)
 
             // Aggiunge righe e dati alla tabella
             for (j in 0 until DataManagement.getInstance().scheda.Esercizi[i].listaEsercizi.size) {
