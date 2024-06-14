@@ -10,15 +10,12 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.button.MaterialButton
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import java.time.LocalDate
 
 class Home : Fragment() {
 
@@ -41,8 +38,21 @@ class Home : Fragment() {
         view.findViewById<TextView>(R.id.tvHeightValue).text =
             "${DataManagement.getInstance().loggato?.altezza} cm"
 
+        // Card Calorie
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val prima = DataManagement.getInstance()
+                .getKcal(LocalDate.of(2024, 1, 1), LocalDate.of(2024, 1, 31))
+            val dopo = DataManagement.getInstance()
+                .getKcal(LocalDate.of(2024, 2, 1), LocalDate.now())
+            view.findViewById<TextView>(R.id.tvKcalComparisonPrevious).text =
+                "$prima Kcal"
+            view.findViewById<TextView>(R.id.tvKcalComparison).text =
+                "$dopo Kcal"
+        }
+
         // Carousel Esercizi
-        val recyclerViewCarousel: RecyclerView = view.findViewById(R.id.recyclerViewCarousel)
+        val recyclerViewCarousel: RecyclerView =
+            view.findViewById(R.id.recyclerViewCarousel)
         recyclerViewCarousel.layoutManager = LinearLayoutManager(
             requireContext(),
             LinearLayoutManager.HORIZONTAL,
@@ -51,23 +61,32 @@ class Home : Fragment() {
         val exercises = DataManagement.getInstance().esercizi
         val adapter = ExercisesCarouselAdapter(exercises)
         recyclerViewCarousel.adapter = adapter
-        recyclerViewCarousel.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                super.onScrollStateChanged(recyclerView, newState)
-                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    val layoutManager = recyclerView.layoutManager as LinearLayoutManager
-                    val firstVisibleItemPosition =
-                        layoutManager.findFirstCompletelyVisibleItemPosition()
-                    if (firstVisibleItemPosition != RecyclerView.NO_POSITION) {
-                        recyclerView.smoothScrollToPosition(firstVisibleItemPosition)
+        recyclerViewCarousel.addOnScrollListener(
+            object :
+                RecyclerView.OnScrollListener() {
+                override fun onScrollStateChanged(
+                    recyclerView: RecyclerView,
+                    newState: Int
+                ) {
+                    super.onScrollStateChanged(recyclerView, newState)
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                        val layoutManager =
+                            recyclerView.layoutManager as LinearLayoutManager
+                        val firstVisibleItemPosition =
+                            layoutManager.findFirstCompletelyVisibleItemPosition()
+                        if (firstVisibleItemPosition != RecyclerView.NO_POSITION) {
+                            recyclerView.smoothScrollToPosition(firstVisibleItemPosition)
+                        }
                     }
                 }
-            }
-        })
+            })
 
-        val createNewWorkoutButton = view.findViewById<MaterialButton>(R.id.createNewWorkoutButton)
+        //bottone crea scheda
+        val createNewWorkoutButton =
+            view.findViewById<MaterialButton>(R.id.createNewWorkoutButton)
         createNewWorkoutButton.setOnClickListener {
-            val bottomNavigationView = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView3)
+            val bottomNavigationView =
+                requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView3)
             bottomNavigationView.selectedItemId = R.id.workout
 
             val navController = findNavController()
@@ -76,7 +95,6 @@ class Home : Fragment() {
             }
         }
         DataManagement.getInstance().getLastWorkout()?.let { updateLastWorkoutUI(it, view) }
-
 
     }
 
@@ -87,6 +105,26 @@ class Home : Fragment() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun inserisciAlle() {
+        val divisione = Divisione(
+            mutableListOf(
+                Svolge(Esercizio(1, "Squat", "Descrizione squat", 110), 3, 10),
+                Svolge(Esercizio(2, "Panca piana", "Descrizione panca piana", 260), 3, 8),
+                Svolge(Esercizio(3, "Suca", "Descrizione panca piana", 340), 2, 8),
+                Svolge(Esercizio(4, "Panca inclinata", "Descrizione panca piana", 110), 3, 8)
+            )
+        )
+        val data = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            LocalDate.of(2024, 1, 11)
+        } else {
+        }
+        val utente = DataManagement.getInstance().loggato
+        val allenamento = utente?.let { Allenamento(DataManagement.getInstance().allenamenti.size+1, divisione, data.toString(), it) }
+        if (allenamento != null) {
+            DataManagement.getInstance().insertAllenamento(allenamento)
+        }
+    }
 
     @SuppressLint("MissingInflatedId")
     private fun updateLastWorkoutUI(lastWorkout: Allenamento, view: View) {

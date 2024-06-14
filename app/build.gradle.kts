@@ -57,9 +57,8 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("androidx.navigation:navigation-fragment-ktx:2.5.3")
     implementation("androidx.navigation:navigation-ui-ktx:2.5.3")
-    implementation ("com.google.android.material:material:1.x.x")
-    implementation ("com.google.android.material:material:1.4.02")
     implementation ("androidx.recyclerview:recyclerview:1.2.1")
     implementation ("androidx.appcompat:appcompat:1.3.12")
     implementation ("androidx.fragment:fragment-ktx:1.3.6")
+    implementation("com.google.android.material:material:1.5.0")
 }
