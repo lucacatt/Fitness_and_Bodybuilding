@@ -4,13 +4,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <!-- Aggiungi il calendario -->
-    <com.google.android.material.calendar.MaterialCalendarView
-        android:id="@+id/calendarView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp" />
 
-    <!-- Altri elementi del layout -->
 
 </LinearLayout>

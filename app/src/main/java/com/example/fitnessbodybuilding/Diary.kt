@@ -1,71 +1,152 @@
+package com.example.fitnessbodybuilding
+
+import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.fitnessbodybuilding.R
-import com.google.android.material.calendar.MaterialCalendarView
-import com.google.android.material.snackbar.Snackbar
+import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.annotation.RequiresApi
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.button.MaterialButton
 import java.time.LocalDate
-import java.time.YearMonth
 
 class Diary : Fragment() {
 
-    private lateinit var calendarView: MaterialCalendarView
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
-        // Inflate the layout for this fragment
-        val rootView = inflater.inflate(R.layout.fragment_diary, container, false)
+        return inflater.inflate(R.layout.fragment_home, container, false)
+    }
 
-        // Inizializza il calendario
-        calendarView = rootView.findViewById(R.id.calendarView)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        // Benvenuto
+        view.findViewById<TextView>(R.id.tvWelcomeTitle).text =
+            "Benvenuto ${DataManagement.getInstance().loggato?.username}!"
 
-        // Esempio di allenamenti (da sostituire con i tuoi dati reali)
-        val allenamenti = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            listOf(
-                LocalDate.parse("2024-01-13"),
-                LocalDate.parse("2024-06-13")
-            )
-        } else {
-            TODO("VERSION.SDK_INT < O")
-        }
+        // Card Peso e Altezza
+        view.findViewById<TextView>(R.id.tvWeightValue).text =
+            "${DataManagement.getInstance().loggato?.peso} Kg"
+        view.findViewById<TextView>(R.id.tvHeightValue).text =
+            "${DataManagement.getInstance().loggato?.altezza} cm"
 
-        // Ottieni il mese corrente
-        val currentMonth = YearMonth.now()
-
-        // Configura il calendario
-        calendarView.setOnDateChangedListener { widget, date, selected ->
-            // Azioni quando viene selezionata una data
-            Snackbar.make(rootView, "Data selezionata: $date", Snackbar.LENGTH_SHORT).show()
-        }
-
+        // Card Calorie
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            calendarView.state().edit()
-                .setMinimumDate(currentMonth.atDay(1))
-                .setMaximumDate(currentMonth.atEndOfMonth())
-                .commit()
+            val prima = DataManagement.getInstance()
+                .getKcal(LocalDate.of(2024, 1, 1), LocalDate.of(2024, 1, 31))
+            val dopo = DataManagement.getInstance()
+                .getKcal(LocalDate.of(2024, 2, 1), LocalDate.now())
+            view.findViewById<TextView>(R.id.tvKcalComparisonPrevious).text =
+                "$prima Kcal"
+            view.findViewById<TextView>(R.id.tvKcalComparison).text =
+                "$dopo Kcal"
         }
 
-        calendarView.addDecorators(
-            // Decoratore per evidenziare i giorni con allenamenti
-            EventDecorator(requireContext(), allenamenti)
+        // Carousel Esercizi
+        val recyclerViewCarousel: RecyclerView =
+            view.findViewById(R.id.recyclerViewCarousel)
+        recyclerViewCarousel.layoutManager = LinearLayoutManager(
+            requireContext(),
+            LinearLayoutManager.HORIZONTAL,
+            false
         )
-
-        return rootView
-    }
-
-    companion object {
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            Diary().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+        val exercises = DataManagement.getInstance().esercizi
+        val adapter = ExercisesCarouselAdapter(exercises)
+        recyclerViewCarousel.adapter = adapter
+        recyclerViewCarousel.addOnScrollListener(
+            object :
+                RecyclerView.OnScrollListener() {
+                override fun onScrollStateChanged(
+                    recyclerView: RecyclerView,
+                    newState: Int
+                ) {
+                    super.onScrollStateChanged(recyclerView, newState)
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                        val layoutManager =
+                            recyclerView.layoutManager as LinearLayoutManager
+                        val firstVisibleItemPosition =
+                            layoutManager.findFirstCompletelyVisibleItemPosition()
+                        if (firstVisibleItemPosition != RecyclerView.NO_POSITION) {
+                            recyclerView.smoothScrollToPosition(firstVisibleItemPosition)
+                        }
+                    }
                 }
+            })
+
+        //bottone crea scheda
+        val createNewWorkoutButton =
+            view.findViewById<MaterialButton>(R.id.createNewWorkoutButton)
+        createNewWorkoutButton.setOnClickListener {
+            val bottomNavigationView =
+                requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView3)
+            bottomNavigationView.selectedItemId = R.id.workout
+
+            val navController = findNavController()
+            if (navController.currentDestination?.id == R.id.homeFragment) {
+                navController.navigate(R.id.action_homeFragment_to_workoutFragment)
             }
+        }
+        DataManagement.getInstance().getLastWorkout()?.let { updateLastWorkoutUI(it, view) }
+
     }
+
+    private fun clearFragmentContent(fragment: Fragment) {
+        val view = fragment.view
+        if (view is ViewGroup) {
+            view.removeAllViews()
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun inserisciAlle() {
+        val divisione = Divisione(
+            mutableListOf(
+                Svolge(Esercizio(1, "Squat", "Descrizione squat", 110), 3, 10),
+                Svolge(Esercizio(2, "Panca piana", "Descrizione panca piana", 260), 3, 8),
+                Svolge(Esercizio(3, "Suca", "Descrizione panca piana", 340), 2, 8),
+                Svolge(Esercizio(4, "Panca inclinata", "Descrizione panca piana", 110), 3, 8)
+            )
+        )
+        val data = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            LocalDate.of(2024, 1, 11)
+        } else {
+        }
+        val utente = DataManagement.getInstance().loggato
+        val allenamento = utente?.let { Allenamento(DataManagement.getInstance().allenamenti.size+1, divisione, data.toString(), it) }
+        if (allenamento != null) {
+            DataManagement.getInstance().insertAllenamento(allenamento)
+        }
+    }
+
+    @SuppressLint("MissingInflatedId")
+    private fun updateLastWorkoutUI(lastWorkout: Allenamento, view: View) {
+        val lastWorkoutDetails = view.findViewById<LinearLayout>(R.id.lastWorkoutDetails)
+        lastWorkoutDetails.removeAllViews() // Clear any existing views
+        view.findViewById<TextView>(R.id.tvData).text = lastWorkout.data.toString()
+
+        lastWorkout.divisione.listaEsercizi.forEach { exercise ->
+            val exerciseView =
+                layoutInflater.inflate(R.layout.item_exercise, lastWorkoutDetails, false)
+            val exerciseNameTextView = exerciseView.findViewById<TextView>(R.id.tvExerciseName)
+            val exerciseWeightTextView = exerciseView.findViewById<TextView>(R.id.tvPesoValue)
+            val exerciseSeriesTextView = exerciseView.findViewById<TextView>(R.id.tvSerieValue)
+            val exerciseRepsTextView = exerciseView.findViewById<TextView>(R.id.tvRepsValue)
+
+            exerciseNameTextView.text = exercise.Esercizio.nome
+            exerciseWeightTextView.text = "${exercise.peso} kg"
+            exerciseSeriesTextView.text = "${exercise.serie} S"
+            exerciseRepsTextView.text = "${exercise.ripetizioni} R"
+
+            lastWorkoutDetails.addView(exerciseView)
+        }
+    }
+
 }
