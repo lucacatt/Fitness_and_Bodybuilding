@@ -1,5 +1,6 @@
 package com.example.fitnessbodybuilding
 
+import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.google.firebase.database.DataSnapshot
@@ -9,21 +10,23 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.Locale
+import kotlin.collections.mutableListOf as mutableListOf1
 
 class DataManagement private constructor(
     val db: DatabaseReference = FirebaseDatabase.getInstance().reference,
-    var utenti: MutableList<User> = mutableListOf(),
-    var esercizi: MutableList<Esercizio> = mutableListOf(),
-    var allenamenti: MutableList<Allenamento> = mutableListOf(),
+    var utenti: MutableList<User> = mutableListOf1(),
+    var esercizi: MutableList<Esercizio> = mutableListOf1(),
+    var allenamenti: MutableList<Allenamento> = mutableListOf1(),
     var scheda: Scheda = Scheda(),
-    var schede: MutableList<Scheda> = mutableListOf(),
+    var schede: MutableList<Scheda> = mutableListOf1(),
     var loggato: User? = null
 ) {
 
 
     private fun loadUsersFromDb() {
         println("Starting to load users from database...")
-        utenti= mutableListOf()
+        utenti = mutableListOf1()
         db.child("users").addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 println("DataSnapshot exists: ${dataSnapshot.exists()}")  // Verifica se il DataSnapshot esiste
@@ -32,7 +35,7 @@ class DataManagement private constructor(
                     return
                 }
 
-                val usersList = mutableListOf<User>()
+                val usersList = mutableListOf1<User>()
                 for (userSnapshot in dataSnapshot.children) {
                     val user = userSnapshot.getValue(User::class.java)
                     if (user != null) {
@@ -63,6 +66,7 @@ class DataManagement private constructor(
                 println("Error adding user: $e")
             }
     }
+
     @RequiresApi(Build.VERSION_CODES.O)
     fun getKcal(inizio: LocalDate, fine: LocalDate): String {
 
@@ -84,6 +88,7 @@ class DataManagement private constructor(
         }
         return calorieTotali.toString()
     }
+
     fun loginUser(email: String, password: String, callback: (Boolean, String?) -> Unit) {
         val foundUser = utenti.find { it.email == email && it.password == password }
         if (foundUser != null) {
@@ -131,7 +136,7 @@ class DataManagement private constructor(
 
 
     fun loadSchedaFromDb() {
-        schede= mutableListOf()
+        schede = mutableListOf1()
         db.child("scheda").addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 for (userSnapshot in dataSnapshot.children) {
@@ -141,6 +146,7 @@ class DataManagement private constructor(
                     }
                 }
             }
+
             override fun onCancelled(databaseError: DatabaseError) {
                 println("Error reading exercises: ${databaseError.message}")
             }
@@ -157,7 +163,7 @@ class DataManagement private constructor(
 
     fun deleteScheda() {
         val schedaRef = db.child("scheda").child(scheda.id.toString()) // Get the specific node
-        scheda= Scheda()
+        scheda = Scheda()
         schedaRef.removeValue()
             .addOnSuccessListener {
                 println("Elemento con ID ${scheda.id} eliminato con successo.")
@@ -168,10 +174,10 @@ class DataManagement private constructor(
     }
 
     fun loadExerciseFromDb() {
-        esercizi = mutableListOf()
+        esercizi = mutableListOf1()
         db.child("Esercizio").addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val exList = mutableListOf<Esercizio>()
+                val exList = mutableListOf1<Esercizio>()
                 for (userSnapshot in dataSnapshot.children) {
                     val esercizio = userSnapshot.getValue(Esercizio::class.java)
                     if (esercizio != null) {
@@ -212,10 +218,10 @@ class DataManagement private constructor(
     }
 
     fun loadAllenamenti() {
-        allenamenti = mutableListOf()
+        allenamenti = mutableListOf1()
         db.child("Allenamenti").addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val exList = mutableListOf<Allenamento>()
+                val exList = mutableListOf1<Allenamento>()
                 for (allenamentiSnapshot in dataSnapshot.children) {
                     val allenamento = allenamentiSnapshot.getValue(Allenamento::class.java)
                     if (allenamento != null) {
@@ -262,5 +268,21 @@ class DataManagement private constructor(
                 println("Error adding Allenamento: $e")
             }
     }
+
+    @SuppressLint("NewApi")
+    fun fillHighlightedDays(month: Int): MutableList<Int> {
+        val giorni: MutableList<Int> = mutableListOf1()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ITALIAN)
+
+        for (training in allenamenti) {
+            if (training.utente.id == loggato?.id) {
+                val data = LocalDate.parse(training.data, formatter)
+                if (data.monthValue == month+1)
+                    giorni.add(data.dayOfMonth)
+            }
+        }
+        return giorni
+    }
+
 
 }

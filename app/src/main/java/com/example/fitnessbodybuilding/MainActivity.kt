@@ -1,5 +1,6 @@
 package com.example.fitnessbodybuilding
 
+import Diary
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup

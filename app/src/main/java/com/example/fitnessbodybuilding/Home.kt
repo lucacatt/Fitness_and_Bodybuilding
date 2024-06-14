@@ -98,14 +98,6 @@ class Home : Fragment() {
 
     }
 
-    private fun clearFragmentContent(fragment: Fragment) {
-        val view = fragment.view
-        if (view is ViewGroup) {
-            view.removeAllViews()
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun inserisciAlle() {
         val divisione = Divisione(
             mutableListOf(
