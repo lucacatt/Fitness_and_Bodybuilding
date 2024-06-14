@@ -277,11 +277,25 @@ class DataManagement private constructor(
         for (training in allenamenti) {
             if (training.utente.id == loggato?.id) {
                 val data = LocalDate.parse(training.data, formatter)
-                if (data.monthValue == month+1)
+                if (data.monthValue == month + 1)
                     giorni.add(data.dayOfMonth)
             }
         }
         return giorni
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun getAllenamenti(month: Int): MutableList<Allenamento> {
+        val temp: MutableList<Allenamento> = mutableListOf1()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ITALIAN)
+        for (allenamento in allenamenti) {
+            if (allenamento.utente.id == loggato?.id) {
+                val data = LocalDate.parse(allenamento.data, formatter)
+                if (data.monthValue == month + 1)
+                    temp.add(allenamento)
+            }
+        }
+        return temp
     }
 
 
