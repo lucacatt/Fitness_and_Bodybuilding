@@ -15,6 +15,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FitnessBodyBuilding"
         tools:targetApi="31">
+
+        <activity
+            android:name=".PaginaAllenamentoActivity"
+            android:exported="false" />
         <activity
             android:name=".Registrazionee"
             android:exported="false" />
@@ -24,10 +28,15 @@
             android:theme="@style/Theme.app.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Dichiarazione del servizio -->
+        <service
+            android:name=".TimerService"
+            android:exported="false" />
+
     </application>
 
 </manifest>
