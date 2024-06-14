@@ -1,5 +1,6 @@
 package com.example.fitnessbodybuilding
 
+import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -19,6 +20,7 @@ import kotlin.math.roundToInt
 import android.graphics.Typeface
 import android.view.View
 import android.view.ViewGroup
+import java.time.LocalDate
 
 class PaginaAllenamentoActivity : AppCompatActivity() {
 
@@ -48,6 +50,25 @@ class PaginaAllenamentoActivity : AppCompatActivity() {
         // Aggiungi la tabella dinamicamente
         val tableLayout = findViewById<TableLayout>(R.id.tableLayout)
         generateTablesWithEx(tableLayout, interoRicevuto)
+        findViewById<Button>(R.id.EndWorkout).setOnClickListener {
+            RegistraAllenamento(interoRicevuto)
+        }
+    }
+
+    @SuppressLint("NewApi")
+    private fun RegistraAllenamento(i: Int) {
+        var all = DataManagement.getInstance().loggato?.let {
+            Allenamento(
+                DataManagement.getInstance().allenamenti.size + 1,
+                DataManagement.getInstance().scheda.Esercizi.get(i),
+                LocalDate.now().toString(),
+                it
+            )
+        }
+        if (all != null) {
+            DataManagement.getInstance().insertAllenamento(all)
+        }
+        onBackPressed()
     }
 
     private fun generateTablesWithEx(container: TableLayout, index: Int) {
