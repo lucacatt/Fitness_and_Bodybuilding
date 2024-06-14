@@ -1,5 +1,6 @@
 package com.example.fitnessbodybuilding
 
+import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
 import android.text.InputType
@@ -229,9 +230,25 @@ class Workout : Fragment() {
 
                 tableLayout.addView(tableRow)
             }
-
             // Aggiunge la tabella al container
             container.addView(tableLayout)
+            val startWorkoutButton = Button(requireContext()).apply {
+                text = "Inizia allenamento" // Sets the text of the button to "Inizia allenamento"
+                layoutParams = TableLayout.LayoutParams(
+                    TableLayout.LayoutParams.WRAP_CONTENT,
+                    TableLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    gravity = Gravity.CENTER // Sets the gravity of the button to the center
+                    setMargins(0, 16, 0, 16) // Sets the margins of the button (left, top, right, bottom)
+                }
+                setOnClickListener {
+                    // When the button is clicked, it starts the activity PaginaAllenamentoActivity
+                    val intent = Intent(requireContext(), PaginaAllenamentoActivity::class.java)
+                    intent.putExtra("chiaveIntero", i) // Aggiungi l'intero come extra
+                    requireContext().startActivity(intent)
+                }
+            }
+            container.addView(startWorkoutButton)
         }
 
         // Aggiunge il pulsante Elimina scheda
