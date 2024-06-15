@@ -98,26 +98,6 @@ class Home : Fragment() {
 
     }
 
-    private fun inserisciAlle() {
-        val divisione = Divisione(
-            mutableListOf(
-                Svolge(Esercizio(1, "Squat", "Descrizione squat", 110), 3, 10),
-                Svolge(Esercizio(2, "Panca piana", "Descrizione panca piana", 260), 3, 8),
-                Svolge(Esercizio(3, "Suca", "Descrizione panca piana", 340), 2, 8),
-                Svolge(Esercizio(4, "Panca inclinata", "Descrizione panca piana", 110), 3, 8)
-            )
-        )
-        val data = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            LocalDate.of(2024, 1, 11)
-        } else {
-        }
-        val utente = DataManagement.getInstance().loggato
-        val allenamento = utente?.let { Allenamento(DataManagement.getInstance().allenamenti.size+1, divisione, data.toString(), it) }
-        if (allenamento != null) {
-            DataManagement.getInstance().insertAllenamento(allenamento)
-        }
-    }
-
     @SuppressLint("MissingInflatedId")
     private fun updateLastWorkoutUI(lastWorkout: Allenamento, view: View) {
         val lastWorkoutDetails = view.findViewById<LinearLayout>(R.id.lastWorkoutDetails)

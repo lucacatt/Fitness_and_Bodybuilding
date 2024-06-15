@@ -41,10 +41,12 @@ class CalendarAdapter(
             dayTextView.text = dateFormat.format(getDateForPosition(position))
             if (dayOfMonth in highlightedDays) {
                 // Highlight the day
-                dayTextView.setBackgroundColor(Color.YELLOW) // Or any color you prefer
+                dayTextView.setBackgroundColor(Color.parseColor("#cfbaff")) // Or any color you prefer
+                dayTextView.setTextColor(Color.BLACK)
             } else {
                 // Reset background color if not highlighted
                 dayTextView.setBackgroundColor(Color.TRANSPARENT)
+                dayTextView.setTextColor(Color.WHITE)
             }
         } else {
             dayTextView.text = "" // Empty for days outside the current month
