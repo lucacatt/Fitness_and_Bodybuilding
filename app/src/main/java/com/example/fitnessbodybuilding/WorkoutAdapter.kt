@@ -35,9 +35,9 @@ class WorkoutAdapter(private val workouts: MutableList<Allenamento>) :
         exerciseView.findViewById<TextView>(R.id.tvPesoValue).text =
             "Kg"
         exerciseView.findViewById<TextView>(R.id.tvSerieValue).text =
-            "S"
+            "Serie"
         exerciseView.findViewById<TextView>(R.id.tvRepsValue).text =
-            "R"
+            "Reps"
         holder.layoutExercises.addView(exerciseView)
         for (exercise in workout.divisione.listaEsercizi) {
             val exerciseView = LayoutInflater.from(holder.itemView.context)

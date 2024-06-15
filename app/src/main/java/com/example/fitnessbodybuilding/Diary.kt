@@ -38,7 +38,6 @@ class Diary : Fragment() {
         nextMonthArrow = view.findViewById(R.id.nextMonthArrow)
         calendarGridView = view.findViewById(R.id.calendarGridView)
         recyclerViewWorkouts = view.findViewById(R.id.recyclerViewWorkouts)
-
         updateMonthDisplay()
 
         previousMonthArrow.setOnClickListener {
