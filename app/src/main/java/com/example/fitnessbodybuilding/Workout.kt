@@ -3,35 +3,22 @@ package com.example.fitnessbodybuilding
 import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
-import android.text.InputType
 import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
 import android.widget.TableLayout
 import android.widget.TableRow
 import android.widget.TextView
-import androidx.fragment.app.FragmentManager
-import androidx.navigation.Navigation
-import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.button.MaterialButton
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [Workout.newInstance] factory method to
- * create an instance of this fragment.
- */
 class Workout : Fragment() {
-    // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
 
@@ -47,11 +34,10 @@ class Workout : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_workout, container, false)
         DataManagement.getInstance().setSchedaUser()
         if (DataManagement.getInstance().scheda.Esercizi.isEmpty()) {
-            val button: Button = view.findViewById(R.id.btnC)
+            val button: MaterialButton = view.findViewById(R.id.btnC)
             button.setOnClickListener {
                 clearFragmentContent(this)
                 findNavController().navigate(R.id.creazione_schedaFragment)
@@ -67,7 +53,6 @@ class Workout : Fragment() {
     private fun generateTablesWithEx(container: ViewGroup, view: View) {
         container.removeAllViews()
         for (i in 0 until DataManagement.getInstance().scheda.Esercizi.size) {
-            // Aggiunge l'intestazione del giorno
             val dayTextView = TextView(requireContext()).apply {
                 text = "Giorno ${i + 1}"
                 gravity = Gravity.CENTER
@@ -75,10 +60,8 @@ class Workout : Fragment() {
                 textSize = 24f
                 setTypeface(null, Typeface.BOLD)
             }
-            // Aggiunge l'intestazione al container
             container.addView(dayTextView)
 
-            // Crea una nuova TableLayout
             val tableLayout = TableLayout(requireContext()).apply {
                 layoutParams = TableLayout.LayoutParams(
                     TableLayout.LayoutParams.MATCH_PARENT,
@@ -87,7 +70,6 @@ class Workout : Fragment() {
                 setPadding(16, 16, 16, 16)
             }
 
-            // Aggiunge l'intestazione alla tabella
             val headerRow1 = TableRow(requireContext()).apply {
                 layoutParams = TableRow.LayoutParams(
                     TableRow.LayoutParams.MATCH_PARENT,
@@ -146,7 +128,6 @@ class Workout : Fragment() {
             headerRow2.addView(headerTextView4)
             tableLayout.addView(headerRow2)
 
-            // Aggiunge righe e dati alla tabella
             for (j in 0 until DataManagement.getInstance().scheda.Esercizi[i].listaEsercizi.size) {
                 val exerciseNameRow = TableRow(requireContext()).apply {
                     layoutParams = TableRow.LayoutParams(
@@ -157,15 +138,14 @@ class Workout : Fragment() {
                 }
 
                 val exerciseNameTextView = TextView(requireContext()).apply {
-                    text =
-                        DataManagement.getInstance().scheda.Esercizi[i].listaEsercizi[j].Esercizio.nome
+                    text = DataManagement.getInstance().scheda.Esercizi[i].listaEsercizi[j].Esercizio.nome
                     gravity = Gravity.CENTER
                     setPadding(8, 8, 8, 8)
                     layoutParams = TableRow.LayoutParams(
                         0,
                         TableRow.LayoutParams.WRAP_CONTENT,
                         1f
-                    ) // Imposta la larghezza della colonna
+                    )
                 }
 
                 exerciseNameRow.addView(exerciseNameTextView)
@@ -179,80 +159,71 @@ class Workout : Fragment() {
                     gravity = Gravity.CENTER
                 }
 
-                // Aggiungi la TextView con il numero per Serie
                 val valueTextViewSerie = TextView(requireContext()).apply {
-                    text =
-                        "Serie: " + DataManagement.getInstance().scheda.Esercizi[i].listaEsercizi[j].serie.toString()
+                    text = "Serie: " + DataManagement.getInstance().scheda.Esercizi[i].listaEsercizi[j].serie.toString()
                     gravity = Gravity.CENTER
                     layoutParams = TableRow.LayoutParams(
-                        0, // Imposta la larghezza della colonna a 0
+                        0,
                         TableRow.LayoutParams.WRAP_CONTENT,
-                        1f // Imposta il peso della colonna a 1
+                        1f
                     )
-                    textSize = 12f // Riduce la dimensione del testo
-                    setPadding(0, 0, 0, 0) // Rimuove il padding
+                    textSize = 12f
+                    setPadding(0, 0, 0, 0)
                 }
 
                 tableRow.addView(valueTextViewSerie)
 
-                // Aggiungi la TextView con il numero per Ripetizioni
                 val valueTextViewRipetizioni = TextView(requireContext()).apply {
-                    text =
-                        "Ripetizioni: " + DataManagement.getInstance().scheda.Esercizi[i].listaEsercizi[j].ripetizioni.toString()
+                    text = "Ripetizioni: " + DataManagement.getInstance().scheda.Esercizi[i].listaEsercizi[j].ripetizioni.toString()
                     gravity = Gravity.CENTER
                     layoutParams = TableRow.LayoutParams(
-                        0, // Imposta la larghezza della colonna a 0
+                        0,
                         TableRow.LayoutParams.WRAP_CONTENT,
-                        1f // Imposta il peso della colonna a 1
+                        1f
                     )
-                    textSize = 12f // Riduce la dimensione del testo
-                    setPadding(0, 0, 0, 0) // Rimuove il padding
+                    textSize = 12f
+                    setPadding(0, 0, 0, 0)
                 }
 
                 tableRow.addView(valueTextViewRipetizioni)
 
-                // Aggiungi una TextView per il peso
                 val pesoTextView = TextView(requireContext()).apply {
-                    text =
-                        "Peso: " + DataManagement.getInstance().scheda.Esercizi[i].listaEsercizi[j].peso.toString()
+                    text = "Peso: " + DataManagement.getInstance().scheda.Esercizi[i].listaEsercizi[j].peso.toString()
                     gravity = Gravity.CENTER
                     layoutParams = TableRow.LayoutParams(
-                        0, // Imposta la larghezza della colonna a 0
+                        0,
                         TableRow.LayoutParams.WRAP_CONTENT,
-                        1f // Imposta il peso della colonna a 1
+                        1f
                     )
-                    textSize = 12f // Riduce la dimensione del testo
-                    setPadding(0, 0, 0, 0) // Rimuove il padding
+                    textSize = 12f
+                    setPadding(0, 0, 0, 0)
                 }
 
-                // Aggiungi il campo di visualizzazione del peso alla riga
                 tableRow.addView(pesoTextView)
-
                 tableLayout.addView(tableRow)
             }
-            // Aggiunge la tabella al container
             container.addView(tableLayout)
-            val startWorkoutButton = Button(requireContext()).apply {
-                text = "Inizia allenamento" // Sets the text of the button to "Inizia allenamento"
+
+            val startWorkoutButton = MaterialButton(requireContext()).apply {
+                text = "Inizia allenamento"
                 layoutParams = TableLayout.LayoutParams(
                     TableLayout.LayoutParams.WRAP_CONTENT,
                     TableLayout.LayoutParams.WRAP_CONTENT
                 ).apply {
-                    gravity = Gravity.CENTER // Sets the gravity of the button to the center
-                    setMargins(0, 16, 0, 16) // Sets the margins of the button (left, top, right, bottom)
+                    gravity = Gravity.CENTER
+                    setMargins(0, 16, 0, 16)
                 }
+                setTextAppearance(R.style.CustomMaterialButton)
                 setOnClickListener {
-                    // When the button is clicked, it starts the activity PaginaAllenamentoActivity
                     val intent = Intent(requireContext(), PaginaAllenamentoActivity::class.java)
-                    intent.putExtra("chiaveIntero", i) // Aggiungi l'intero come extra
+                    intent.putExtra("chiaveIntero", i)
                     requireContext().startActivity(intent)
                 }
             }
             container.addView(startWorkoutButton)
         }
 
-        // Aggiunge il pulsante Elimina scheda
-        val deleteButton = Button(requireContext()).apply {
+        val deleteButton = MaterialButton(requireContext()).apply {
             text = "Elimina scheda"
             layoutParams = TableLayout.LayoutParams(
                 TableLayout.LayoutParams.WRAP_CONTENT,
@@ -260,21 +231,17 @@ class Workout : Fragment() {
             ).apply {
                 gravity = Gravity.CENTER
             }
+            setTextAppearance(R.style.CustomMaterialButton)
             setPadding(16, 16, 16, 16)
             setOnClickListener {
                 DataManagement.getInstance().deleteScheda()
                 clearFragmentContent(this@Workout)
                 DataManagement.getInstance().loadSchedaFromDb()
-
-                requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView3).selectedItemId =
-                    R.id.home
+                requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView3).selectedItemId = R.id.home
             }
         }
-
-
         container.addView(deleteButton)
     }
-
 
     private fun clearFragmentContent(fragment: Fragment) {
         val view = fragment.view
@@ -283,17 +250,7 @@ class Workout : Fragment() {
         }
     }
 
-
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment Workout.
-         */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
             Workout().apply {
@@ -303,5 +260,4 @@ class Workout : Fragment() {
                 }
             }
     }
-
 }

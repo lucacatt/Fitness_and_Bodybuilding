@@ -60,4 +60,5 @@ dependencies {
     implementation ("androidx.recyclerview:recyclerview:1.2.1")
     implementation ("androidx.appcompat:appcompat:1.3.12")
     implementation ("androidx.fragment:fragment-ktx:1.3.6")
+    implementation ("com.google.android.material:material:1.3.0")
 }

@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.EditText
 import android.widget.TableLayout
 import android.widget.TableRow
@@ -17,6 +16,8 @@ import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.fitnessbodybuilding.databinding.FragmentCreazioneSchedaBinding
+import com.google.android.material.button.MaterialButton
+import com.example.fitnessbodybuilding.R;
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -40,8 +41,9 @@ class CreazioneScheda : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_creazione_scheda, container, false)
+        binding = FragmentCreazioneSchedaBinding.bind(view)
 
-        val button: Button = view.findViewById(R.id.btnCadenza)
+        val button: MaterialButton = view.findViewById(R.id.btnCadenza)
         val tableContainer: ViewGroup = view.findViewById(R.id.tableContainer)
 
         button.setOnClickListener {
@@ -116,7 +118,7 @@ class CreazioneScheda : Fragment() {
                 container.addView(tableLayout)
 
                 // Crea un nuovo bottone centrato
-                val button = Button(requireContext())
+                val button = MaterialButton(requireContext())
                 button.text = "Aggiungi esercizio"
                 val buttonParams = TableLayout.LayoutParams(
                     TableLayout.LayoutParams.WRAP_CONTENT,
@@ -139,11 +141,11 @@ class CreazioneScheda : Fragment() {
         }
 
         // Crea un nuovo bottone centrato
-        val button = Button(requireContext())
+        val button = MaterialButton(requireContext())
         button.text = "Salva"
-        val buttonParams = TableLayout.LayoutParams(
-            TableLayout.LayoutParams.WRAP_CONTENT,
-            TableLayout.LayoutParams.WRAP_CONTENT
+        val buttonParams = TableRow.LayoutParams(
+            TableRow.LayoutParams.WRAP_CONTENT,
+            TableRow.LayoutParams.WRAP_CONTENT
         )
         buttonParams.gravity = Gravity.CENTER
         button.layoutParams = buttonParams
@@ -266,7 +268,7 @@ class CreazioneScheda : Fragment() {
                 tableRow.gravity = Gravity.CENTER
 
                 // Aggiungi il pulsante "+" alla riga per Serie
-                val plusButtonSerie = Button(requireContext())
+                val plusButtonSerie = MaterialButton(requireContext())
                 plusButtonSerie.text = "+"
                 plusButtonSerie.layoutParams = TableRow.LayoutParams(
                     0, // Imposta la larghezza della colonna a 0
@@ -283,7 +285,7 @@ class CreazioneScheda : Fragment() {
                 }
 
                 // Aggiungi il pulsante "-" alla riga per Serie
-                val minusButtonSerie = Button(requireContext())
+                val minusButtonSerie = MaterialButton(requireContext())
                 minusButtonSerie.text = "-"
                 minusButtonSerie.layoutParams = TableRow.LayoutParams(
                     0, // Imposta la larghezza della colonna a 0
@@ -320,7 +322,7 @@ class CreazioneScheda : Fragment() {
                 tableRow.addView(minusButtonSerie)
 
                 // Aggiungi il pulsante "+" alla riga per Ripetizioni
-                val plusButtonRipetizioni = Button(requireContext())
+                val plusButtonRipetizioni = MaterialButton(requireContext())
                 plusButtonRipetizioni.text = "+"
                 plusButtonRipetizioni.layoutParams = TableRow.LayoutParams(
                     0, // Imposta la larghezza della colonna a 0
@@ -338,7 +340,7 @@ class CreazioneScheda : Fragment() {
                 }
 
                 // Aggiungi il pulsante "-" alla riga per Ripetizioni
-                val minusButtonRipetizioni = Button(requireContext())
+                val minusButtonRipetizioni = MaterialButton(requireContext())
                 minusButtonRipetizioni.text = "-"
                 minusButtonRipetizioni.layoutParams = TableRow.LayoutParams(
                     0, // Imposta la larghezza della colonna a 0
@@ -399,7 +401,7 @@ class CreazioneScheda : Fragment() {
             container.addView(tableLayout)
 
             // Crea un nuovo bottone centrato
-            val button = Button(requireContext())
+            val button = MaterialButton(requireContext())
             button.text = "Aggiungi esercizio"
             val buttonParams = TableLayout.LayoutParams(
                 TableLayout.LayoutParams.WRAP_CONTENT,
@@ -421,7 +423,7 @@ class CreazioneScheda : Fragment() {
         }
 
         // Crea un nuovo bottone centrato
-        val button = Button(requireContext())
+        val button = MaterialButton(requireContext())
         button.text = "Salva"
         val buttonParams = TableLayout.LayoutParams(
             TableLayout.LayoutParams.WRAP_CONTENT,
@@ -522,3 +524,5 @@ class CreazioneScheda : Fragment() {
             }
     }
 }
+
+
