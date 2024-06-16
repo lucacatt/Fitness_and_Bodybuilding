@@ -213,7 +213,6 @@ class Workout : Fragment() {
                     gravity = Gravity.CENTER
                     setMargins(0, 16, 0, 16)
                 }
-                setTextAppearance(R.style.CustomMaterialButton)
                 setOnClickListener {
                     val intent = Intent(requireContext(), PaginaAllenamentoActivity::class.java)
                     intent.putExtra("chiaveIntero", i)
@@ -231,7 +230,6 @@ class Workout : Fragment() {
             ).apply {
                 gravity = Gravity.CENTER
             }
-            setTextAppearance(R.style.CustomMaterialButton)
             setPadding(16, 16, 16, 16)
             setOnClickListener {
                 DataManagement.getInstance().deleteScheda()
