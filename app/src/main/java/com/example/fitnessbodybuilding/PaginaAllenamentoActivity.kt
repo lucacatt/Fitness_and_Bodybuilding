@@ -148,69 +148,69 @@ class PaginaAllenamentoActivity : AppCompatActivity() {
         // Aggiunge righe e dati alla tabella
         val exercises = DataManagement.getInstance().scheda.Esercizi[index].listaEsercizi
         if (exercises.isNotEmpty()) {
-            val exercise = exercises[0] // Prende solo il primo esercizio della lista
+            exercises.forEach { exercise ->
+                val exerciseTableRow = TableRow(this).apply {
+                    layoutParams = TableRow.LayoutParams(
+                        TableRow.LayoutParams.MATCH_PARENT,
+                        TableRow.LayoutParams.WRAP_CONTENT
+                    )
+                    gravity = Gravity.CENTER
+                }
 
-            val exerciseTableRow = TableRow(this).apply {
-                layoutParams = TableRow.LayoutParams(
-                    TableRow.LayoutParams.MATCH_PARENT,
-                    TableRow.LayoutParams.WRAP_CONTENT
-                )
-                gravity = Gravity.CENTER
+                val exerciseNameTextView = TextView(this).apply {
+                    text = exercise.Esercizio.nome
+                    gravity = Gravity.CENTER
+                    setPadding(8, 8, 8, 8)
+                    layoutParams = TableRow.LayoutParams(
+                        0,
+                        TableRow.LayoutParams.WRAP_CONTENT,
+                        1f
+                    ) // Imposta la larghezza della colonna
+                }
+
+                exerciseTableRow.addView(exerciseNameTextView)
+
+                val seriesTextView = TextView(this).apply {
+                    text = "Serie: ${exercise.serie}"
+                    gravity = Gravity.CENTER
+                    layoutParams = TableRow.LayoutParams(
+                        0,
+                        TableRow.LayoutParams.WRAP_CONTENT,
+                        1f
+                    ) // Imposta la larghezza della colonna
+                    textSize = 12f
+                }
+
+                exerciseTableRow.addView(seriesTextView)
+
+                val repetitionsTextView = TextView(this).apply {
+                    text = "Ripetizioni: ${exercise.ripetizioni}"
+                    gravity = Gravity.CENTER
+                    layoutParams = TableRow.LayoutParams(
+                        0,
+                        TableRow.LayoutParams.WRAP_CONTENT,
+                        1f
+                    ) // Imposta la larghezza della colonna
+                    textSize = 12f
+                }
+
+                exerciseTableRow.addView(repetitionsTextView)
+
+                val weightTextView = TextView(this).apply {
+                    text = "Peso: ${exercise.peso}"
+                    gravity = Gravity.CENTER
+                    layoutParams = TableRow.LayoutParams(
+                        0,
+                        TableRow.LayoutParams.WRAP_CONTENT,
+                        1f
+                    ) // Imposta la larghezza della colonna
+                    textSize = 12f
+                }
+
+                exerciseTableRow.addView(weightTextView)
+
+                container.addView(exerciseTableRow)
             }
-
-            val exerciseNameTextView = TextView(this).apply {
-                text = exercise.Esercizio.nome
-                gravity = Gravity.CENTER
-                setPadding(8, 8, 8, 8)
-                layoutParams = TableRow.LayoutParams(
-                    0,
-                    TableRow.LayoutParams.WRAP_CONTENT,
-                    1f
-                ) // Imposta la larghezza della colonna
-            }
-
-            exerciseTableRow.addView(exerciseNameTextView)
-
-            val seriesTextView = TextView(this).apply {
-                text = "Serie: ${exercise.serie}"
-                gravity = Gravity.CENTER
-                layoutParams = TableRow.LayoutParams(
-                    0,
-                    TableRow.LayoutParams.WRAP_CONTENT,
-                    1f
-                ) // Imposta la larghezza della colonna
-                textSize = 12f
-            }
-
-            exerciseTableRow.addView(seriesTextView)
-
-            val repetitionsTextView = TextView(this).apply {
-                text = "Ripetizioni: ${exercise.ripetizioni}"
-                gravity = Gravity.CENTER
-                layoutParams = TableRow.LayoutParams(
-                    0,
-                    TableRow.LayoutParams.WRAP_CONTENT,
-                    1f
-                ) // Imposta la larghezza della colonna
-                textSize = 12f
-            }
-
-            exerciseTableRow.addView(repetitionsTextView)
-
-            val weightTextView = TextView(this).apply {
-                text = "Peso: ${exercise.peso}"
-                gravity = Gravity.CENTER
-                layoutParams = TableRow.LayoutParams(
-                    0,
-                    TableRow.LayoutParams.WRAP_CONTENT,
-                    1f
-                ) // Imposta la larghezza della colonna
-                textSize = 12f
-            }
-
-            exerciseTableRow.addView(weightTextView)
-
-            container.addView(exerciseTableRow)
         }
     }
 
