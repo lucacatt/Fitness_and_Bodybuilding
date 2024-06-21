@@ -32,7 +32,6 @@ class Diary : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_diary, container, false)
-
         currentMonthText = view.findViewById(R.id.currentMonthText)
         previousMonthArrow = view.findViewById(R.id.previousMonthArrow)
         nextMonthArrow = view.findViewById(R.id.nextMonthArrow)
@@ -51,13 +50,12 @@ class Diary : Fragment() {
         }
 
         recyclerViewWorkouts.layoutManager = LinearLayoutManager(requireContext())
-
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        DataManagement.getInstance().loadAllenamenti()
     }
 
     private fun updateMonthDisplay() {
